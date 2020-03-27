@@ -1,0 +1,1 @@
+It was aborted bc I had not a lot of practice knowledge. It's left for better times :^)
