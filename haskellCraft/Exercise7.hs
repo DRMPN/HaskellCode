@@ -1,4 +1,4 @@
-module Chapter7 where
+module Exercise7 where
 
 import Data.List (nub, delete)
 import Data.Char (toLower)
