@@ -503,3 +503,25 @@ startMakeLOT = makeLOT []
 -- 10.30
 -- modify the program so that capitalized words like "Dog" are indexed under their uncapitalized equivalents "dog"
 -- this does not work well for proper names like "Amelia" - what could you do about that?
+
+makeIndexMod3 :: Doc -> [ ([Int], Word) ]
+makeIndexMod3 =
+  shorten .        -- [([Int], Word)] -> [([Int], Word)]
+  amalgamate .     -- [([Int], Word)] -> [([Int], Word)]
+  makeLists .      -- [(Int, Word)]   -> [([Int], Word)]
+  sortLs .         -- [(Int, Word)]   -> [(Int, Word)]
+  allLowerWords .         -- [(Int, Word)]   -> [(Int, Word)]
+  allNumWords .    -- [(Int, Line)]   -> [(Int, Word)]
+  numLines .       -- [Line]          -> [(Int, Line)]
+  lines            -- Doc             -> [Line]
+
+listOfNames = ["Amelia"]
+
+-- lowercases all words before sorting them and filters names
+allLowerWords :: [(Int,Word)] -> [(Int, Word)]
+allLowerWords = map lowerTuple
+  where
+    lowerTuple (num,word)
+      | elem word listOfNames = (num, word)
+      | otherwise = (num, map toLower word)
+
