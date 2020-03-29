@@ -1,4 +1,8 @@
+module Exercise10 where
+
 import Prelude hiding (Word)
+import Data.Char (toLower)
+import Data.List (sort)
 
 import Exercise2
 
@@ -314,14 +318,14 @@ shorten = filter sizer
 -- 10.20
 -- define funciton lines using takeWhile and dropWhile
 -- do not give empty word "cat\n\ndog" and "fish\n"
-lines' :: String -> [String]
-lines' [] = []
-lines' (x:xs)
-  | x == '\n' = lines' xs
-  | otherwise = first : (lines' rest)
+myLines :: String -> [String]
+myLines [] = []
+myLines (x:xs)
+  | x == '\n' = myLines xs
+  | otherwise = first : (myLines rest)
     where
-      first = takeWhile (\n -> n /= '\n') (x:xs)
-      rest = dropWhile (\n -> n /= '\n') (x:xs)
+      first = takeWhile (/= '\n') (x:xs)
+      rest = dropWhile (/= '\n') (x:xs)
 
 -- 10.21
 -- use lambda expressions to replace the local definitoins of makelist and shorten
@@ -366,7 +370,7 @@ sortLs' (p:ps) = sortLs' smaller ++ [p] ++ sortLs' bigger
   where smaller = [q | q <- ps, orderPair' q p]
         bigger = [q | q <- ps, orderPair' p q]
         orderPair' (n1, w1) (n2, w2) = w1 < w2 || (w1 == w2 && n1 < n2)
--- !!! i literally don't know you can't change something you have to completly rewrite this
+-- !!! TODO i literally don't know you can't change something you have to completly rewrite this
 
 -- 10.24
 -- how could the functions getUntil and dropUnitl be used in amalgamate
@@ -432,3 +436,70 @@ numWords' (number, line) =
 -- 1) modify the program as little as is necessary - return the length of a list rather than the list itself
 --    note : modify it before sortLs
 -- 2) take the program structure as a guide and write a simpler program which calculates the number of occurrences directly
+
+-- I method
+makeIndexMod2 :: Doc -> [(Int, Word)]
+makeIndexMod2 =
+  sortLs .                 -- [(Int, Word)]   -> [(Int, Word)]
+  uniteAllWordsStarter .   -- [(Int, Word)]   -> [(Int, Word)]
+  allNumWords .            -- [(Int, Line)]   -> [(Int, Word)]
+  numLines .               -- [Line]          -> [(Int, Line)]
+  lines                    -- Doc             -> [Line]
+
+uniteAllWordsStarter :: [(Int,Word)] -> [(Int,Word)]
+uniteAllWordsStarter = uniteAllWords []
+  where
+    -- lot low
+    uniteAllWords lot [] = lot
+    uniteAllWords lot (x:xs) = countWords lot sameWords restWords
+      where sameWords
+              | null xs = [x]
+              | otherwise = filter (\(n,w) -> w == snd x) (x:xs)
+            restWords = filter (\(n,w) -> w /= snd x) (x:xs)
+  -- lot sameWords restWords
+    countWords lot [] restWords = uniteAllWords lot restWords
+    countWords lot sameWords restWords =
+      uniteAllWords (lot ++ [(length sameWords, word)]) restWords
+      where word = map (toLower) . snd . head $ sameWords
+
+
+-- II method
+wordCounter :: Doc -> [(Int,Word)]
+wordCounter = startMakeLOT . wordSorting
+
+-- sort words in alphabetical order and lowercase them
+wordSorting :: String -> [Word]
+wordSorting = sort . map (map toLower) . myWords
+
+-- produces a list of clean words (without punctuation marks)
+myWords :: String -> [Word]
+myWords [] = []
+myWords (x:xs)
+  | elem x whitespace = myWords xs
+  | otherwise = first : (myWords rest)
+    where
+      first = takeWhile notPM (x:xs)
+      rest = dropWhile notPM (x:xs)
+      -- old (\n -> not $ elem n whitespace)
+      notPM = not . flip elem whitespace
+
+-- ################ - Here I used an expereince from UBCx course to make that recurion
+--                         probably bad, but that how I remember it
+
+-- takes    : list of words
+-- produces : list of tuples
+startMakeLOT :: [Word] -> [(Int,Word)]
+startMakeLOT = makeLOT []
+  where
+  -- function takes : lot low
+    makeLOT lot [] = lot
+    makeLOT lot (x:xs) = filterList x xs (0,x) lot
+  -- function takes : word low tuple lot
+    filterList word [] (n,w) lot = makeLOT (lot ++ [(n+1, w)]) []
+    filterList word (x:xs) (n,w) lot
+      | word == x = filterList word xs (n+1, w) lot
+      | otherwise = makeLOT (lot ++ [(n+1, w)]) (x:xs)
+
+-- 10.30
+-- modify the program so that capitalized words like "Dog" are indexed under their uncapitalized equivalents "dog"
+-- this does not work well for proper names like "Amelia" - what could you do about that?
