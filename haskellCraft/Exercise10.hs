@@ -438,6 +438,7 @@ numWords' (number, line) =
 -- 2) take the program structure as a guide and write a simpler program which calculates the number of occurrences directly
 
 -- I method
+-- !!! porbably we need to add amalgamate to this function, but I didn't test it in that way, bc I think that duplicates are removed in sortLs function
 makeIndexMod2 :: Doc -> [(Int, Word)]
 makeIndexMod2 =
   sortLs .                 -- [(Int, Word)]   -> [(Int, Word)]
@@ -525,3 +526,55 @@ allLowerWords = map lowerTuple
       | elem word listOfNames = (num, word)
       | otherwise = (num, map toLower word)
 
+-- 10.31
+-- redefine the function sortLs so that it takes the comparison function as a parameter
+-- it's limited bc it calls the orderPair function
+-- what is its type?
+
+sortLs'' :: Ord a => (a -> a -> Bool) -> [a] -> [a]
+sortLs'' func [] = []
+sortLs'' func (p:ps) = sortLs'' func smaller ++ [p] ++ sortLs'' func larger
+  where
+    smaller = [q | q <- ps, func q p]
+    larger = [q | q <- ps, func p q]
+
+-- 10.32
+-- How would you modify the program if it was to be used to form the index for a Haskell script?
+{-
+funciton should do the same thing
+ 1. indexing function definition rather them words
+ 2. ignoring comments like -- or {- -}
+ 3. sorting in alphabetical order
+-}
+-- TODO 1.remove comment after definition 2.Harder remove funciton defition between: {- -}
+
+makeIndexMod4 :: Doc ->  [([Int], Word)]
+makeIndexMod4 =
+  amalgamate .      -- [([Int], Word)] ->  [([Int], Word)]
+  makeLists .       -- [(Int, Word)]   ->  [([Int], Word)]
+  sortLs .          -- [(Int, Word)]   ->  [(Int, Word)]
+  removeComments .  -- [(Int,Line)]    ->  [(Int,Word)]
+  findFunDef .      -- [(Int,Line)]    ->  [(Int, Line)]
+  numLines .        -- [Line]          ->  [(Int, Line)]
+  lines             -- Doc             ->  [Line]
+
+-- checks whether or not line is a function definition
+findFunDef :: [(Int, Line)] -> [(Int, Line)]
+findFunDef = filter isFuncDef
+  where
+    -- isFuncDef :: (Int, Line) -> Bool
+    isFuncDef (num,line)
+      | elem "::" lineWords = True
+      | otherwise = False
+      where lineWords = words line
+
+removeComments :: [(Int,Line)] -> [(Int,Word)]
+removeComments = filter removeComment
+  where removeComment (num,(x1:x2:xs))
+          | x1 == ' ' = removeComment (num,(x2:xs)) -- if the first char is space
+          | isComment = False
+          | otherwise = True
+          where isComment =
+                  ( (x1 == '-') && (x2 == '-') ) ||
+                  ( (x1 == '{') && (x2 == '-') ) ||
+                  ( (x1 == '-') && (x2 == '}') )
