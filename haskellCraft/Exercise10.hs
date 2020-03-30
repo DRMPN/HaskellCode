@@ -578,3 +578,40 @@ removeComments = filter removeComment
                   ( (x1 == '-') && (x2 == '-') ) ||
                   ( (x1 == '{') && (x2 == '-') ) ||
                   ( (x1 == '-') && (x2 == '}') )
+{-
+Principle of extensionality:
+
+Given two functions
+ f(n) = (*2) . (+5)
+ g(n) = (+10) . (*2)
+
+we are allowed to tool inside them to see how the mechanisms work.
+these functions are Extensionally equal; given the same input, both functions always produce the same value.
+But the definitions of the functions are not equal, and in that Intensional sense the functions are not the same.
+-}
+
+-- 10.33
+-- using the principle of extensionality, show that function composition is associative
+{-
+f . (g . h)     = (f . g) . h
+f . (g . h) x   = ((f . g) . h) x
+f . (g . h (x)) = (f . g) .  h(x)
+f . (g . h (x)) = f . (g . h (x))
+-}
+
+-- 10.34
+-- show that for all f.
+{-
+id . f = f
+id . f x = f x
+id (f(x)) = fx
+fx = fx
+-}
+
+-- 10.35
+-- show that the function flip satisfies
+-- flip . flip = id
+-- flip f a b = f b a
+-- flip (flip f a b) = flip f b a = f a b
+-- id $ flip f a b = f a b
+-- therefore flip . flip = id 
