@@ -611,7 +611,39 @@ fx = fx
 -- 10.35
 -- show that the function flip satisfies
 -- flip . flip = id
--- flip f a b = f b a
--- flip (flip f a b) = flip f b a = f a b
--- id $ flip f a b = f a b
--- therefore flip . flip = id 
+{-
+flip f a b = f b a
+flip (flip f a b) = flip f b a = f a b
+id $ flip f a b = f a b
+therefore flip . flip = id
+-}
+
+-- 10.36
+-- prove that the functions curry and uncurry are inverses
+{-
+curry . uncurry = id
+uncurry . curry = id
+definition of that functions are different but result is the same
+-}
+
+-- 10.37
+-- using induction, prove that for all natural nubmers n
+-- iter n id = id
+{-
+iter n id = id . (iter n-1 id)
+~
+iter 1 id = id . (iter 0 id) = id ... id . id
+-}
+
+-- 10.38
+-- show that the functions abs and signm are idempotent
+{-
+f . f = f
+abs . abs (12) = abs (12)
+abs (12) = 12
+12 = 12
+
+signum . signum (24) = signum (24)
+signum (1) = 1
+1 = 1
+-}
