@@ -1,4 +1,7 @@
+import Exercise7 (isSubSequence)
+
 -- just to remember to myself :set +s
+
 {-
 
          Understanding the problem
@@ -41,3 +44,44 @@ Looking back on what you have done might affect your program, its design or inde
  - Does the program run in reasinable time? If not, can you see where the bottlenecks are? Can you see how to modify the program to improve its performane?
 
 -}
+
+
+-- 11.1
+-- Give a recursive definition of the range
+-- [m,n .. p]
+{-
+1 case
+m>n ->
+  m > p = []
+  m : [(n, n+(m-n) .. p]
+2 case
+m<n ->
+  m < p = []
+  m : [n, n-(m-n) .. p]
+-}
+
+-- 11.2
+-- Think of two more ways of implementing the function
+{-
+simplePalCheck :: String -> Bool
+simplePalCheck st = ( reverse st ) == st
+
+1) Modify it to sove
+2) Use it to a simplified problem
+3) Rewrite it using different style e.g list comprehinson, function composition, higher-order functions
+4) Find and use a function/functions in libraries i.e you won't write it from scratch, just net surfing in hoogle and composing in one functions ...
+-}
+
+-- 11.3
+-- Define a function
+subst :: String -> String -> String -> String
+subst text old new
+  | null old = text -- bycicle
+  | isSubSequence old text = unwords changeWord
+  | otherwise = text
+  where changeWord = start ++ [new] ++ finish
+        start = takeWhile (/=old) toWords
+        finish = tail $ dropWhile (/=old) toWords
+        toWords = words text
+-- TODO rewrite that function will change old word to new word when its checking that the old word is subSequence of text
+-- bug or feature? - subst "some words to me written" "words" ""
