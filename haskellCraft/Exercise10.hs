@@ -639,11 +639,52 @@ iter 1 id = id . (iter 0 id) = id ... id . id
 -- show that the functions abs and signm are idempotent
 {-
 f . f = f
-abs . abs (12) = abs (12)
-abs (12) = 12
-12 = 12
+abs . abs (0) = abs (0)
+abs (0) = 0
+0 = 0
 
-signum . signum (24) = signum (24)
+signum . signum (0) = signum (0)
 signum (1) = 1
 1 = 1
 -}
+
+-- 10.39
+-- prove
+{-
+map f (ys++zs) = map f ys ++ map f zs
+map f ([]++[]) = map f [] ++ map f []
+map f [] = [] ++ []
+[] = [] \proved
+-}
+
+-- 10.40
+-- trash exercise
+
+-- 10.41
+{-
+comcat ([] ++ []) = concat [] ++ concat []
+-}
+
+-- 10.42
+{-
+concat (map (map f) []) = map f (concat [])
+concat [] = map f []
+[] = []
+-}
+
+-- 10.43
+-- prove (<0) . (+1) = (0<=)
+{-
+(<0) . (+1) 0
+(<0) 1
+True
+
+(<=0) 0
+True
+
+\proved
+-}
+
+-- 10.44
+-- prove for all finite list xs ...
+-- just do a base case and use induction theorem
