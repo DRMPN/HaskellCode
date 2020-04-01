@@ -1,5 +1,3 @@
-import Exercise7 (isSubSequence)
-
 -- just to remember to myself :set +s
 
 {-
@@ -74,14 +72,19 @@ simplePalCheck st = ( reverse st ) == st
 
 -- 11.3
 -- Define a function
+-- Option 1: If we are sure, that the input will be a sentense without punctuation marks
 subst :: String -> String -> String -> String
 subst text old new
-  | null old = text -- bycicle
-  | isSubSequence old text = unwords changeWord
-  | otherwise = text
+  | null old || null new = text
+  | otherwise = unwords changeWord
   where changeWord = start ++ [new] ++ finish
         start = takeWhile (/=old) toWords
         finish = tail $ dropWhile (/=old) toWords
         toWords = words text
+
+-- bug or feature? - |#|  subst "some words to me written" "words" ""   |#|
+-- ** fixed :^> **
+
 -- TODO rewrite that function will change old word to new word when its checking that the old word is subSequence of text
--- bug or feature? - subst "some words to me written" "words" ""
+-- Option 2: If we want to change a word in sentence, which contains punctuatin marks
+-- modify the function from exercise 7 or write new one. Main problem : need to save too many variables
