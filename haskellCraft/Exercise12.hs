@@ -46,3 +46,63 @@ oneLookupSecond (x:xs) b
 
 -- another way to define those functions
 oneLookUpFirstFoldr list a = foldr (\(x,y) acc -> if x == a then y else acc) (error "No such element in the list") list
+
+---------------------------------------------------------------------------------------
+
+class Visible a where
+  toString :: a -> String
+  size :: a -> Int
+
+instance Visible Char where
+  toString ch = [ch]
+  size _ = 1
+
+instance Visible Bool where
+  toString True = "True"
+  toString False = "False"
+  size _ = 1
+
+instance Visible a => Visible [a] where
+  toString = concat . map toString
+  size = foldr (+) 1 . map size
+
+-- 12.4
+-- How would you make Bool, pair types (a, b), and triple types, (a, b, c), into Visible types?
+
+instance (Visible a, Visible b) => Visible (a, b) where
+  toString (a, b) = (++) (toString a) (toString b)
+  size _ = 1
+
+instance (Visible a, Visible b, Visible c) => Visible (a, b, c) where
+  toString (a, b, c) = (toString a) ++ (toString b) ++ (toString c)
+  size _ = 1
+
+-- 12.5
+-- Write a function to convert an integer into a String, and hence show how Int can be an instance of Visible
+
+instance Visible Int where
+  toString = show
+  size _ = 1
+
+-- 12.6
+-- What is the type of the function
+-- compare x y = size x <= size y
+-- compare :: (Visible a, Visible b) => a -> b -> Bool
+
+-- 12.7
+-- Complete the default definitions for the class Ord
+{-
+x >= y = x > y || x == y
+x < y = y > x
+min x y = \x y -> if x > y && y < x then x else y
+max x y = \x y -> if x < y && y > x then x else y
+compare x y = \x y -> | x > y = GT | x < y = LT | otherwise = EQ
+-}
+
+-- 12.8
+-- complete the following instance declarations
+{-
+instance (Ord a, Ord b) => Ord (a,b) where
+
+instance Ord b => Ord [b] where
+-}
