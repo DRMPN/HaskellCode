@@ -106,3 +106,14 @@ instance (Ord a, Ord b) => Ord (a,b) where
 
 instance Ord b => Ord [b] where
 -}
+
+-- 12.9
+-- Investigate the Haskell definition of '<' on the type Bool and (t1,t2,...,tk)
+
+-- 12.10
+-- Define a function TODO investigate what the hell is this
+--showBoolFun :: (Bool -> Bool) -> String
+-- once again shitty exercises
+
+-- Generalize this to
+-- showBoolFunGen :: (a -> String) -> (Bool -> a) -> String
