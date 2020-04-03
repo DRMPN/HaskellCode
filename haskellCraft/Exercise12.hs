@@ -117,3 +117,13 @@ instance Ord b => Ord [b] where
 
 -- Generalize this to
 -- showBoolFunGen :: (a -> String) -> (Bool -> a) -> String
+
+{-
+                            ** Short summary **
+
+Overloading - functions and operators can have different definitions as different types
+   -- mechanism which enables this is the system of classes
+
+A class definition contains a signature which contains the names and types of operations which must be supplied if a type is to be a member of the class. For a particular type. the function definitions are contained in an instance declaration.
+
+-}
