@@ -96,3 +96,43 @@ It's hard for me to understand what is a unifiable (I'm lazy) but my general alg
  2. Either of them must have the same amount of arguments
  3. something else :^)
 -}
+
+-- 13.10
+-- Give the type of each of the individual conditional equations which follow, and discuss the type of the function which together they define.
+{-
+merge (x:xs) (y:ys)
+Eq a => [a] -> [a] -> [a]
+
+merge (x:xs) [] = (x:xs)
+[a] -> [] -> [a]
+
+merge [] (y:ys) = (y:ys)
+[] -> [a] -> [a]
+
+merge [] [] = []
+[] -> [] -> ->[]
+-}
+
+-- 13.11
+-- Define a polymorphic sorting function, and show how its type is derived from the type of the ordering relation
+polySort :: Ord a => [a] -> [a]
+polySort [] = []
+polySort (x:xs) = smaller ++ [x] ++ bigger
+  where
+    smaller = polySort . filter (<=x) $ xs
+    bigger = polySort . filter (>x) $ xs
+-- In two words: functions < and <= are both in Ord class, it means that a variable, passed to this functions, must be in class Ord to proceed evaluation
+
+-- 13.12
+-- Investigate the types of the following numerical funcitons; you will find that the types refer to some of the built-in numeric classes.
+{-
+mult x y = x*y
+:t (*) :: Num a => a -> a ->a
+mult :: Num a => a -> a -> a
+
+divide x = x `div` 2
+:t (div) :: (Num a, Eq a, Enum a) => (Num a, Ord a, Enum a) => (Real a, Enum a) => Integral a => a -> a -> a
+
+share x = x / 2.0
+:t (/) :: Num a => Fractional a => a -> a -> a
+-}
