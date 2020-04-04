@@ -7,6 +7,8 @@ import Data.List (sort)
 import Exercise2
 
 import Pictures
+
+import Test.QuickCheck (quickCheck)
 -- :set +s
 
 -- 10.1
@@ -366,11 +368,12 @@ myAppend first second = foldr (:) second first
 -- 10.23
 -- redefine sortLs so that duplicate copies of an item are not removed
 sortLs' [] = []
-sortLs' (p:ps) = sortLs' smaller ++ [p] ++ sortLs' bigger
-  where smaller = [q | q <- ps, orderPair' q p]
-        bigger = [q | q <- ps, orderPair' p q]
-        orderPair' (n1, w1) (n2, w2) = w1 < w2 || (w1 == w2 && n1 < n2)
--- !!! TODO i literally don't know you can't change something you have to completly rewrite this
+sortLs' (p:ps) = smaller ++ [p] ++ bigger
+  where smaller = sortLs' . filter (\(n1,w1) -> w1 <= snd p) $ ps
+        bigger = sortLs' . filter (\(n1,w1) -> w1 > snd p) $ ps
+-- new TODO : fix bug with that thing
+prop_sortLs' :: [(Int, Word)] -> Bool
+prop_sortLs' test_list = (sortLs' test_list) == (sort test_list)
 
 -- 10.24
 -- how could the functions getUntil and dropUnitl be used in amalgamate
