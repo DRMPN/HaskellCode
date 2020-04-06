@@ -141,7 +141,8 @@ move x y (NewTriangle sides (x0,y0)) = NewTriangle sides (x0+x,y0+y)
 -- 14.11
 -- Define a function to test whether to NewShapes overlap
 
--- assume first shape is nearer to the 0
+-- assume first shape is nearest to the x=0
+-- assume we calculate only x overlap
 isOverlapNS :: NewShape -> NewShape -> Bool
 isOverlapNS newrec1 newrec2
   | fst coord1 + snd coord2 <= w1 + w2 = True
@@ -153,3 +154,55 @@ isOverlapNS newrec1 newrec2
     w1 = fst coord1 + snd coord1
     w2 = fst coord2 + snd coord2
     findWide (NewRectangle (h, w) (x,y)) = (y-w/2,y+w/2)
+
+-- 14.12
+-- How would  you implement the type of 'strings or numbers' used as a part of an addresss?
+-- Write a function which gives the textual form of one of these objects.
+-- Give a definition of a type of names and adresses using the type you have defined.
+
+data HouseAddress = HouseName String | HouseNumber Float
+  deriving (Show, Read, Eq)
+
+toTextForm :: HouseAddress -> String
+toTextForm (HouseName a) = a
+toTextForm (HouseNumber a) = show a
+
+-- 14.13
+-- Reimplement the library database of Section 5.6 to use an algebraic type like People rather than a pair.
+{-
+data Database = People (PersonName,PersonLoan) | Books (BookName) (WhoRented)
+type PersonName = String
+type PersonLoan = String
+type BookName = String
+type WhoRented = String
+-}
+
+-- 14.14
+-- The library database is to be extended
+
+{-
+Probably, it's worth to reimplement database using record syntax like this:
+data LibCatalog a b c d = LibItem {lib_author :: a,
+                                   lib_title :: b,
+                                   lib_type :: c,
+                                   lib_period :: d}
+-}
+
+data LibDatabase = LibReaders | LibCatalog
+
+data LibReaders = LibPerson (Lib_fullname,
+                             (Lib_author, Lib_title, Lib_period) ) deriving Show
+
+data LibCatalog = LibItem ( (Lib_author, Lib_title) ,
+                            (Lib_type, Lib_period) ) deriving Show
+type Lib_fullname = String
+type Lib_author = String
+type Lib_title = String
+type Lib_type = String
+type Lib_period = Int
+
+-- Define functions:
+-- Find all items on loan to a given person.
+findPersonLoanItem db fullname = foldr (\(LibPerson (name, item)) acc -> if name == fullname
+                                                                         then acc ++ [item]
+                                                                         else acc) [] db
