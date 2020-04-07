@@ -188,7 +188,7 @@ data LibCatalog a b c d = LibItem {lib_author :: a,
                                    lib_period :: d}
 -}
 
-data LibDatabase = LibReaders | LibCatalog
+data LibDatabase a = LibReaders a | LibCatalog a
 
 data LibReaders = LibPerson (Lib_fullname,
                              (Lib_author, Lib_title, Lib_period) ) deriving Show
@@ -206,3 +206,73 @@ type Lib_period = Int
 findPersonLoanItem db fullname = foldr (\(LibPerson (name, item)) acc -> if name == fullname
                                                                          then acc ++ [item]
                                                                          else acc) [] db
+
+{-
+A BIG TODO TODO TODO : can't understand correclty how should I represent database as algeabtic type
+so TODO later
+-}
+
+
+data Expr = Lit Int |
+            Add Expr Expr |
+            Sub Expr Expr
+--Lit 2
+--Add (Lit 2) (Lit )
+--Add (Sub (Lit 3) (Lit 1)) (Lit 3)
+
+evalExpr :: Expr -> Int
+evalExpr (Lit n) = n
+evalExpr (Add e1 e2) = (evalExpr e1) + (evalExpr e2)
+evalExpr (Sub e1 e2) = (evalExpr e1) - (evalExpr e2)
+
+showExpr :: Expr -> String
+showExpr (Lit n) = show n
+showExpr (Add e1 e2)
+  = "(" ++ showExpr e1 ++ "+" ++ showExpr e2 ++ ")"
+showExpr (Sub e1 e2)
+  = "(" ++ showExpr e1 ++ "-" ++ showExpr e2 ++ ")"
+
+countLit :: Expr -> Int
+countLit (Lit n) = 1
+countLit (Add e1 e2) = countLit e1 + countLit e2
+countLit (Sub e1 e2) = countLit e1 + countLit e2
+
+
+
+data NTree = NilT | Node Int NTree NTree
+
+sumTree, depth :: NTree -> Int
+
+sumTree NilT = 0
+sumTree (Node n t1 t2) = n + sumTree t1 + sumTree t2
+
+depth NilT = 0
+depth (Node n t1 t2) = 1 + max (depth t1) (depth t2)
+
+-- sumTree (Node 3 (Node 4 NilT NilT) NilT)
+-- depth (Node 3 (Node 4 NilT NilT) NilT)
+
+occurs :: NTree -> Int -> Int
+occurs (Node n t1 t2) p
+  | n == p = 1 + occurs t1 p + occurs t2 p
+  | otherwise = occurs t1 p + occurs t2 p
+
+
+data InfixExpr = InfixLit Int | InfixExpr :+: InfixExpr | InfixExpr :-: InfixExpr
+
+evalInfExp :: InfixExpr -> Int
+evalInfExp (InfixLit n) = n
+evalInfExp (e1 :+: e2) = evalInfExp e1 + evalInfExp e2
+evalInfExp (e1 :-: e2) = evalInfExp e1 - evalInfExp e2
+
+-- eval1 $ (Lit1 2) :+: (Lit1 2)
+
+showInfExp :: InfixExpr -> String
+showInfExp (InfixLit n) = show n
+showInfExp (e1 :+: e2) = "(" ++ showInfExp e1 ++ "+" ++ showInfExp e2 ++ ")"
+showInfExp (e1 :-: e2) = "(" ++ showInfExp e1 ++ "-" ++ showInfExp e2 ++ ")"
+
+countInfExp :: InfixExpr -> Int
+countInfExp (InfixLit n) = 1
+countInfExp (e1 :+: e2) = (countInfExp e1) + (countInfExp e2)
+countInfExp (e1 :-: e2) = (countInfExp e1) + (countInfExp e2)
