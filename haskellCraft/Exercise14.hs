@@ -261,35 +261,9 @@ findAllPerLoan :: LibReader -> [Item]
 findAllPerLoan (Reader name loan) = loan
 
 -- Find all books, CDs or videos on loan to a particular person
--- TODO don't know how to filter by Type
+-- TODO don't know how to filter by Type ** new ** look up in 14.18
 --------------------------------------------------------------------
 --------------------------------------------------------------------
-
-
-data Expr = Lit Int |
-            Add Expr Expr |
-            Sub Expr Expr
---Lit 2
---Add (Lit 2) (Lit )
---Add (Sub (Lit 3) (Lit 1)) (Lit 3)
-
-evalExpr :: Expr -> Int
-evalExpr (Lit n) = n
-evalExpr (Add e1 e2) = (evalExpr e1) + (evalExpr e2)
-evalExpr (Sub e1 e2) = (evalExpr e1) - (evalExpr e2)
-
-showExpr :: Expr -> String
-showExpr (Lit n) = show n
-showExpr (Add e1 e2)
-  = "(" ++ showExpr e1 ++ "+" ++ showExpr e2 ++ ")"
-showExpr (Sub e1 e2)
-  = "(" ++ showExpr e1 ++ "-" ++ showExpr e2 ++ ")"
-
-countLit :: Expr -> Int
-countLit (Lit n) = 1
-countLit (Add e1 e2) = countLit e1 + countLit e2
-countLit (Sub e1 e2) = countLit e1 + countLit e2
-
 
 
 data NTree = NilT | Node Int NTree NTree
@@ -309,6 +283,54 @@ occurs :: NTree -> Int -> Int
 occurs (Node n t1 t2) p
   | n == p = 1 + occurs t1 p + occurs t2 p
   | otherwise = occurs t1 p + occurs t2 p
+
+
+
+data PersonM = Adult Name Address Biog | Child Name
+data Biog = Parent String [PersonM] | NonParent String
+
+type Name = String
+type Address = String
+
+showPerson (Adult nm ad bio) = show nm ++ show ad ++ showBiog bio
+
+showBiog (Parent st perList) = st ++ concat (map showPerson perList)
+
+
+
+data Expr = Lit Int |
+            Add Expr Expr |
+            Sub Expr Expr |
+            Mult Expr Expr|
+            Div Expr Expr
+--Lit 2
+--Add (Lit 2) (Lit )
+--Add (Sub (Lit 3) (Lit 1)) (Lit 3)
+
+evalExpr :: Expr -> Int
+evalExpr (Lit n) = n
+evalExpr (Add e1 e2) = (evalExpr e1) + (evalExpr e2)
+evalExpr (Sub e1 e2) = (evalExpr e1) - (evalExpr e2)
+evalExpr (Mult e1 e2) = (evalExpr e1) * (evalExpr e2)
+evalExpr (Div e1 e2) = (evalExpr e1) `div` (evalExpr e2)
+
+showExpr :: Expr -> String
+showExpr (Lit n) = show n
+showExpr (Add e1 e2)
+  = "(" ++ showExpr e1 ++ "+" ++ showExpr e2 ++ ")"
+showExpr (Sub e1 e2)
+  = "(" ++ showExpr e1 ++ "-" ++ showExpr e2 ++ ")"
+showExpr (Mult e1 e2)
+  = "(" ++ showExpr e1 ++ "*" ++ showExpr e2 ++ ")"
+showExpr (Div e1 e2)
+  = "(" ++ showExpr e1 ++ "/" ++ showExpr e2 ++ ")"
+
+countLit :: Expr -> Int
+countLit (Lit n) = 1
+countLit (Add e1 e2) = countLit e1 + countLit e2
+countLit (Sub e1 e2) = countLit e1 + countLit e2
+countLit (Mult e1 e2) = countLit e1 + countLit e2
+countLit (Div e1 e2) = countLit e1 + countLit e2
 
 
 data InfixExpr = InfixLit Int | InfixExpr :+: InfixExpr | InfixExpr :-: InfixExpr
@@ -331,12 +353,74 @@ countInfExp (e1 :+: e2) = (countInfExp e1) + (countInfExp e2)
 countInfExp (e1 :-: e2) = (countInfExp e1) + (countInfExp e2)
 
 
-data PersonM = Adult Name Address Biog | Child Name
-data Biog = Parent String [PersonM] | NonParent String
+-- 14.15
+-- Give calculations of
+{-
 
-type Name = String
-type Address = String
+eval (Lit 67) = 67
+eval (Add (Sub (Lit 3) (Lit 1)) (Lit3 )) = (Sub (Lit 3) - (sub 1) ) + (Lit 3)
+      = ( 3 - 1 ) + 3 = 5
+show (Add (Lit 67) (Lit (-34))) = show (Lit 67) + (Lit (-34)) = "(67+-34)"
 
-showPerson (Adult nm ad bio) = show nm ++ show ad ++ showBiog bio
+-}
 
-showBiog (Parent st perList) = st ++ concat (map showPerson perList)
+-- 14.16
+-- Define the functions which counts the number of operators in an expression
+sizeExpr :: Expr -> Int
+sizeExpr (Lit n) = 0
+sizeExpr (Add e1 e2) = sizeExpr e1 + sizeExpr e2 + 1
+sizeExpr (Sub e1 e2) = sizeExpr e1 + sizeExpr e2 + 1
+sizeExpr (Mult e1 e2) = sizeExpr e1 + sizeExpr e2 + 1
+sizeExpr (Div e1 e2) = sizeExpr e1 + sizeExpr e2 + 1
+
+-- 14.17
+-- Add the operations of multiplication and integer division to the type Expr
+-- Redefine the functions eval,show and size to include these new cases
+
+-- 14.18
+-- Show how the functions eval, show and size are defined fo the new type
+
+data ExprMod = LitMod Int | Op Ops ExprMod ExprMod
+data Ops = AddMod | SubMod | MulMod | DivMod deriving (Eq, Show)
+
+evalMod :: ExprMod -> Int
+evalMod (LitMod n) = n
+evalMod (Op ops e1 e2)
+  | ops == AddMod = evalWith (+)
+  | ops == SubMod = evalWith (-)
+  | ops == MulMod = evalWith (*)
+  | otherwise = evalWith (div)
+  where
+    evalWith n = n (evalMod e1) (evalMod e2)
+-- evalMod (Op AddMod (LitMod 2) (LitMod 2))
+
+showMod :: ExprMod -> String
+showMod (LitMod n) = show n
+showMod (Op ops e1 e2)
+  | ops == AddMod = combineWith "+"
+  | ops == SubMod = combineWith "-"
+  | ops == MulMod = combineWith "*"
+  | otherwise = combineWith "/"
+    where
+      combineWith operator = "(" ++ showMod e1 ++ operator ++ showMod e2 ++ ")"
+
+sizeMod :: ExprMod -> Int
+sizeMod (LitMod _) = 0
+sizeMod (Op _ e1 e2) = 1 + (sizeMod e1) + (sizeMod e2)
+
+-- 14.19
+{-
+sumTree (Node 3 (Node 4 NilT NilT) NilT)
+
+3 + (sumTree (Node 4 NilT NilT)) + (sumTree NilT)
+3 + (4 + (sumTree NilT) + (sumTree NilT)) + 0
+3 + (4 + 0 + 0) + 0
+7
+
+depth (Node 3 (Node 4 NilT NilT) NilT)
+
+1 + (depth (Node 4 NilT NilT)) + depth NilT
+1 + (4 + depth NilT + depth NilT) + 0
+1 + (1 + 0 + 0) + 0
+2
+-}
