@@ -1,6 +1,6 @@
 -- :set +s
 
-import Test.QuickCheck (quickCheck)
+import Test.QuickCheck 
 
 -------------------------------------------------------------
 
@@ -15,14 +15,14 @@ weather _ = Cold
 -------------------------------------------------------------
 
 -- binary bc it takes two elements
-data People = Person Name Age
-type Name = String
-type Age = Int
+data PeoplePrim = PersonPrim NamePrim AgePrim
+type NamePrim = String
+type AgePrim = Int
 --unary constructors
 --data Age = Years Int
 
-showPerson :: People -> String
-showPerson (Person st n) = st ++ " -- " ++ show n
+showPersonPrim :: PeoplePrim -> String
+showPersonPrim (PersonPrim st n) = st ++ " -- " ++ show n
 -------------------------------------------------------------
 
 data Shape = Circle Float | Rectangle Float Float | Triangle Float Float Float
@@ -187,7 +187,7 @@ data LibCatalog a b c d = LibItem {lib_author :: a,
                                    lib_type :: c,
                                    lib_period :: d}
 -}
-
+{-
 data LibDatabase a = LibReaders a | LibCatalog a
 
 data LibReaders = LibPerson (Lib_fullname,
@@ -206,11 +206,64 @@ type Lib_period = Int
 findPersonLoanItem db fullname = foldr (\(LibPerson (name, item)) acc -> if name == fullname
                                                                          then acc ++ [item]
                                                                          else acc) [] db
-
-{-
-A BIG TODO TODO TODO : can't understand correclty how should I represent database as algeabtic type
-so TODO later
 -}
+--------------------------------------------------------------------
+-- Definitions
+--------------------------------------------------------------------
+
+-- assume in the library only one copy of each book
+data LibDatabase = LibDBPerson | LibDBCatalog -- TODO not sure about that construction
+
+data LibDBPerson = NotLibPerson | LibPerson [LibReader]
+data LibReader = Reader Name [Item]
+
+data LibDBCatalog = NotLibItem | LibItem [Item]
+data Item =
+  Book (Title, Author) Period |
+  CD (Title, Author) Period |
+  Video Title Period deriving (Show, Eq)
+
+type Title = String
+type Author = String
+type Period = Int
+
+--------------------------------------------------------------------
+-- Examples
+--------------------------------------------------------------------
+
+book1, book2, cd1, cd2, vid1, vid2 :: Item
+book1 = Book ("How to cook a tire.","John Tired") 30
+book2 = Book ("How to read", "Abrahm Link") 21
+cd1 = CD ("Photoset master", "Julia Gankoff") 7
+cd2 = CD ("Don't do it yourself", "Mike Tyloon") 3
+vid1 = Video "10000 degree knife vs luxury soap" 3
+vid2 = Video "Pokecode: Code them all" 1
+
+libcat1,libcat2 :: LibDBCatalog
+libcat1 = LibItem [book1, cd1, vid1]
+libcat2 = NotLibItem
+
+per1,per2,per3 :: LibReader
+per1 = Reader "Ilya Sokolov" [vid2]
+per2 = Reader "Arthur Morgan" [book2,cd2]
+per3 = Reader "Anna Shzkwar" []
+
+libdbper1,libdbper2 :: LibDBPerson
+libdbper1 = LibPerson [per1,per2,per3]
+libdbper2 = NotLibPerson
+
+--------------------------------------------------------------------
+-- Functions
+--------------------------------------------------------------------
+
+-- Find all items on loan to a given person.
+findAllPerLoan :: LibReader -> [Item]
+findAllPerLoan (Reader name loan) = loan
+
+-- Find all books, CDs or videos on loan to a particular person
+-- TODO don't know how to filter by Type
+--------------------------------------------------------------------
+--------------------------------------------------------------------
 
 
 data Expr = Lit Int |
@@ -276,3 +329,14 @@ countInfExp :: InfixExpr -> Int
 countInfExp (InfixLit n) = 1
 countInfExp (e1 :+: e2) = (countInfExp e1) + (countInfExp e2)
 countInfExp (e1 :-: e2) = (countInfExp e1) + (countInfExp e2)
+
+
+data PersonM = Adult Name Address Biog | Child Name
+data Biog = Parent String [PersonM] | NonParent String
+
+type Name = String
+type Address = String
+
+showPerson (Adult nm ad bio) = show nm ++ show ad ++ showBiog bio
+
+showBiog (Parent st perList) = st ++ concat (map showPerson perList)
