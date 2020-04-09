@@ -1,5 +1,5 @@
 -- :set +s
-
+import Data.List (sort)
 import Test.QuickCheck 
 
 -------------------------------------------------------------
@@ -266,7 +266,7 @@ findAllPerLoan (Reader name loan) = loan
 --------------------------------------------------------------------
 
 
-data NTree = NilT | Node Int NTree NTree
+data NTree = NilT | Node Int NTree NTree deriving (Show, Eq)
 
 sumTree, depth :: NTree -> Int
 
@@ -283,19 +283,6 @@ occurs :: NTree -> Int -> Int
 occurs (Node n t1 t2) p
   | n == p = 1 + occurs t1 p + occurs t2 p
   | otherwise = occurs t1 p + occurs t2 p
-
-
-
-data PersonM = Adult Name Address Biog | Child Name
-data Biog = Parent String [PersonM] | NonParent String
-
-type Name = String
-type Address = String
-
-showPerson (Adult nm ad bio) = show nm ++ show ad ++ showBiog bio
-
-showBiog (Parent st perList) = st ++ concat (map showPerson perList)
-
 
 
 data Expr = Lit Int |
@@ -424,3 +411,95 @@ depth (Node 3 (Node 4 NilT NilT) NilT)
 1 + (1 + 0 + 0) + 0
 2
 -}
+
+-- 14.20
+-- Complete the redefinition of functions over Expr after it has been defined using the infix constructors
+
+-- others defined above
+sizeInfExpr :: InfixExpr -> Int
+sizeInfExpr (InfixLit n) = 0
+sizeInfExpr (e1 :+: e2) = 1 + sizeInfExpr e1 + sizeInfExpr e2
+sizeInfExpr (e1 :-: e2) = 1 + sizeInfExpr e1 + sizeInfExpr e2
+
+-- 14.21
+-- Define functions to return the left- and right-hand sub-trees of an NTree.
+
+data TreeSide = LeftSide | RightSide deriving Eq
+
+returnTreeSide :: NTree -> TreeSide -> NTree
+returnTreeSide NilT _ = NilT
+returnTreeSide (Node n e1 e2) side
+  | side == LeftSide = Node n (returnTreeSide e1 side) NilT
+  | otherwise = Node n NilT (returnTreeSide e2 side)
+
+-- I just write it, don't why, for future use probably
+-- function to insert a leaf to the end of the tree
+buildNewLeft :: NTree -> NTree -> NTree
+buildNewLeft NilT leaf = leaf
+buildNewLeft (Node n e1 e2) leaf
+  | e1 == NilT = Node n leaf e2
+  | otherwise = Node n (buildNewLeft e1 leaf) e2
+
+-- 14.22
+-- Define a function to decide whether a number is an element of an NTree
+elemOfTree :: Int -> NTree -> Bool
+elemOfTree _ NilT = False
+elemOfTree num (Node n e1 e2)
+  | num == n = True
+  | otherwise = elemOfTree num e1 || elemOfTree num e2
+
+-- 14.23
+-- Define functions to find the maximum and minimmum values held in an NTree
+
+-- helper function to get list of all elements of the list
+getTreeElements :: NTree -> [Int]
+getTreeElements NilT = []
+getTreeElements (Node n t1 t2) = [n] ++ (getTreeElements t1) ++ (getTreeElements t2)
+
+maxOfTree :: NTree -> Int
+maxOfTree NilT = error "Empty Tree"
+maxOfTree tree = foldr1 (\n acc -> if n > acc then n else acc) $ getTreeElements tree
+
+minOfTree :: NTree -> Int
+minOfTree NilT = error "Empty Tree"
+minOfTree tree = foldr1 (\n acc -> if n < acc then n else acc) $ getTreeElements tree
+
+-- 14.24
+-- Define a function to reflect an NTree
+-- What is the result of reflecting twice?
+reflectTree :: NTree -> NTree
+reflectTree NilT = NilT
+reflectTree (Node n t1 t2) = Node n (reflectTree t2) (reflectTree t1)
+-- Examplels of trees
+tree1 = Node 0 (Node 1 (Node 3 NilT NilT) (Node 4 NilT NilT)) (Node 2 (Node 5 NilT NilT) (Node 6 NilT NilT))
+tree2 = Node 0 (Node 2 (Node 6 NilT NilT) (Node 5 NilT NilT)) (Node 1 (Node 4 NilT NilT) (Node 3 NilT NilT))
+-- Tests
+prop1_reflectTree, prop2_reflectTree :: String
+prop1_reflectTree
+  | tree1 == (reflectTree tree2) = "First test passed."
+  | otherwise = "First test not passed."
+prop2_reflectTree
+  | tree1 == (reflectTree $ reflectTree tree1) = "Second test passed."
+  | otherwise = "Second test not passed."
+
+-- 14.25
+-- Define functions
+collapseTree, sortTree :: NTree -> [Int]
+-- TODO reforge this funciton to use a mutual recursive
+collapseTree NilT = []
+collapseTree (Node n t1 t2) = (collapseTree t1) ++ [n] ++ (collapseTree t2)
+
+sortTree = sort . getTreeElements
+-- I think I did it wrong, but who can check this?
+
+-- 14.26
+-- Complete the definitions of showPerson and showBiog
+data PersonM = Adult Name Address Biog | Child Name
+data Biog = Parent String [PersonM] | NonParent String
+
+type Name = String
+type Address = String
+
+showPerson (Adult nm ad bio) = show nm ++ show ad ++ showBiog bio
+
+showBiog (Parent st perList) = st ++ concat (map showPerson perList)
