@@ -1,6 +1,6 @@
 -- :set +s
 import Data.List (sort)
-import Test.QuickCheck 
+import Test.QuickCheck
 
 -------------------------------------------------------------
 
@@ -218,10 +218,9 @@ data LibDBPerson = NotLibPerson | LibPerson [LibReader]
 data LibReader = Reader Name [Item]
 
 data LibDBCatalog = NotLibItem | LibItem [Item]
-data Item =
-  Book (Title, Author) Period |
-  CD (Title, Author) Period |
-  Video Title Period deriving (Show, Eq)
+data Item = NonAuthT ItemType Title Period | AuthT ItemType (Title, Author) Period
+  deriving (Show)
+data ItemType = Video | Book | CD deriving (Show, Eq)
 
 type Title = String
 type Author = String
@@ -232,12 +231,12 @@ type Period = Int
 --------------------------------------------------------------------
 
 book1, book2, cd1, cd2, vid1, vid2 :: Item
-book1 = Book ("How to cook a tire.","John Tired") 30
-book2 = Book ("How to read", "Abrahm Link") 21
-cd1 = CD ("Photoset master", "Julia Gankoff") 7
-cd2 = CD ("Don't do it yourself", "Mike Tyloon") 3
-vid1 = Video "10000 degree knife vs luxury soap" 3
-vid2 = Video "Pokecode: Code them all" 1
+book1 = AuthT Book ("How to cook a tire.","John Tired") 30
+book2 = AuthT Book ("How to read", "Abrahm Link") 21
+cd1 = AuthT CD ("Photoset master", "Julia Gankoff") 7
+cd2 = AuthT CD ("Don't do it yourself", "Mike Tyloon") 3
+vid1 = NonAuthT Video "10000 degree knife vs luxury soap" 3
+vid2 = NonAuthT Video "Pokecode: Code them all" 1
 
 libcat1,libcat2 :: LibDBCatalog
 libcat1 = LibItem [book1, cd1, vid1]
@@ -261,7 +260,21 @@ findAllPerLoan :: LibReader -> [Item]
 findAllPerLoan (Reader name loan) = loan
 
 -- Find all books, CDs or videos on loan to a particular person
--- TODO don't know how to filter by Type ** new ** look up in 14.18
+findPerLoan :: ItemType -> LibReader -> [Item]
+findPerLoan it (Reader name loi) = findAllWithType it [] loi
+  where
+    findAllWithType _ list [] = list
+    findAllWithType giventype list (x:xs)
+      | giventype == listitemtype = findAllWithType giventype (list ++ [x]) xs
+      | otherwise = findAllWithType giventype list xs
+      where listitemtype = getType x
+    getType (NonAuthT itemtype _ _) = itemtype
+    getType (AuthT itemtype _ _) = itemtype
+
+-- Find all items in the database due back on or before a particular day, and the same information  for any given person
+
+-- assume that Period in database always updated with current data and could be negative if person have exiperd loan
+-- assume items it catalog always with full period and it can't be change unless someone will take it from the library
 --------------------------------------------------------------------
 --------------------------------------------------------------------
 
@@ -501,5 +514,7 @@ type Name = String
 type Address = String
 
 showPerson (Adult nm ad bio) = show nm ++ show ad ++ showBiog bio
+showPerson (Child nm) = show nm
 
 showBiog (Parent st perList) = st ++ concat (map showPerson perList)
+showBiog (NonParent st) = st
