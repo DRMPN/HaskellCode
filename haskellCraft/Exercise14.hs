@@ -521,3 +521,96 @@ showBiog (NonParent st) = st
 
 -- 14.27
 -- TODO Too complicated task for now.
+
+-- 14.28
+-- Investigate which of the functions over trees discussed in the exercises of Section 14.2 can be made polymorphic.
+{-
+sumTree couldn't be polymorhic bc it sum integers in nods therefore we actually can't add other values but if we don't care about the length of the input so then we could append or zip values in a node of a tree
+
+ofc functions depth could be polymorhic
+
+and the same with the function occurs
+-}
+
+-- 14.29
+-- Define a function twist which swaps the order of a union
+twist :: Either a b -> Either b a
+twist (Left a) = (Right a)
+twist (Right a) = (Left a)
+
+-- 14.30
+-- How would you define applyLeft using the function either?
+{-
+applyLeft :: (a->c) -> Either a b -> c
+applyLeft f (Left x) = f x
+applyLeft f (Right _)  = error "applyLeft applied to Right"
+-}
+applyLeft :: (a -> c) -> Either a b -> c
+applyLeft f x = either f (\n -> error "applyLeft aplied to Right") x
+
+-- 14.31
+-- Show that any funciton of type a -> b can be transformed into functions of type
+{-
+a -> Either b c
+a -> Either c b
+
+1stfunction a
+  | a == n = Left b
+  | otherwise = Right c
+and vice versa
+-}
+
+-- 14.32
+-- How could you generalize either to join so
+joinEither :: (a -> c) -> (b -> d) -> Either a b -> Either c d
+joinEither f g (Left a) = Left (f a)
+joinEither f g (Right b) = Right (g b)
+
+-- 14.33
+-- Define functions
+data GTree a = Leaf a | Gnode [GTree a] deriving (Show, Eq)
+
+testtree = Gnode [Leaf 0,
+                  Gnode [Leaf 1,
+                         Gnode [Leaf 3, Leaf 4]],
+                   Gnode [Leaf 2,
+                          Gnode [Leaf 5, Leaf 6]]]
+
+gCount, gDepth :: GTree a -> Int
+-- count the number of leaves in a GTree
+gCount (Leaf a) = 1
+gCount (Gnode []) = 0
+gCount (Gnode (x:xs)) = (gCount x) + (gCount (Gnode xs))
+
+-- find the depth of a GTree
+-- TODO I think this function contains a bug, so test it and don't forget about max function
+gDepth (Leaf a) = 0
+gDepth (Gnode []) = 0
+gDepth (Gnode (x:xs)) = 1 + gDepth (Gnode xs)
+
+-- sum numeric GTree Int
+gSumTree :: GTree Int -> Int
+gSumTree (Leaf a) = a
+gSumTree (Gnode []) = 0
+gSumTree (Gnode (x:xs)) = (gSumTree x) + (gSumTree (Gnode xs))
+
+-- whether an element appers in a GTree
+elemOfGTree :: Eq a => a -> GTree a -> Bool
+elemOfGTree elm (Leaf a) = (a == elm)
+elemOfGTree elm (Gnode []) = False
+elemOfGTree elm (Gnode (x:xs)) = elemOfGTree elm x || elemOfGTree elm (Gnode xs)
+
+-- map a function over the elements at the leaves of a GTree
+-- test1 :: (a -> b) -> GTree a -> GTree b
+test1 f (Leaf a) = Leaf (f a)
+test1 f (Gnode []) = Gnode []
+test1 f (Gnode (x:xs))
+  | null xs = test1 f x
+  | otherwise = Gnode ([test1 f x] ++ [test1 f (Gnode xs)])
+
+-- flatten a GTree to a list
+
+-- 14.34
+-- How is the completely empty tree represented as a GTree
+-- Gnode []
+-- or Leaf []
