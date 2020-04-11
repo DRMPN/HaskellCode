@@ -518,3 +518,6 @@ showPerson (Child nm) = show nm
 
 showBiog (Parent st perList) = st ++ concat (map showPerson perList)
 showBiog (NonParent st) = st
+
+-- 14.27
+-- TODO Too complicated task for now.
