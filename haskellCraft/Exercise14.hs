@@ -610,12 +610,52 @@ mapGTree f (Gnode xs) = mapHelper [] f (Gnode xs)
 -- lol just made it on random. Is it a mutual recursion? xD
 
 -- flatten a GTree to a list
-test1 (Leaf a) = [a]
-test1 (Gnode xs) = test2 [] (Gnode xs)
+flatGTree (Leaf a) = [a]
+flatGTree (Gnode xs) = flatHelper [] (Gnode xs)
   where
-    test2 new (Gnode []) = new
-    test2 new (Gnode (x:xs)) = test2 (new ++ test1 x) (Gnode xs)
+    flatHelper list (Gnode []) = list
+    flatHelper list (Gnode (x:xs)) = flatHelper (list ++ flatGTree x) (Gnode xs)
+-- TODO think how would you reforge this function to increase perfomance
 
 -- 14.34
 -- How is the completely empty tree represented as a GTree
 -- Gnode [] or Leaf []
+
+-- *****
+-- Error handling
+-- *****
+{-
+1 Method just stop calculation and rise an error
+   error :: String -> a
+2 Method dummy values
+   tail :: [a] -> [a]
+   tail (_:xs) = xs
+   tail [] = []
+3 Method error values
+   when condition holds, f gives an error
+   fErr x
+    | cond = Nothing
+    | otherwise = just (f x)
+-}
+
+errDiv :: Int -> Int -> Maybe Int
+errDiv n m
+  | (m /= 0) = Just (n `div` m)
+  | otherwise = Nothing
+
+-- We can transmit an error value
+-- this somehow dosen't work
+mapMaybe :: (a -> b) -> Maybe a -> Maybe b
+mapMyabe g Nothing = Nothing
+mapMaybe g (Just x) = Just (g x)
+
+-- this works as expected
+data Perhabs a = Null | Something a
+  deriving (Eq, Ord, Read, Show)
+
+mapPerhabs :: (a -> b) -> Perhabs a -> Perhabs b
+mapPerhabs g Null = Null
+mapPerhabs g (Something a) = Something (g a)
+
+-- or trap value
+-- maybe :: b -> (a -> b) -> Maybe a -> b
