@@ -601,16 +601,21 @@ elemOfGTree elm (Gnode []) = False
 elemOfGTree elm (Gnode (x:xs)) = elemOfGTree elm x || elemOfGTree elm (Gnode xs)
 
 -- map a function over the elements at the leaves of a GTree
--- test1 :: (a -> b) -> GTree a -> GTree b
-test1 f (Leaf a) = Leaf (f a)
-test1 f (Gnode []) = Gnode []
-test1 f (Gnode (x:xs))
-  | null xs = test1 f x
-  | otherwise = Gnode ([test1 f x] ++ [test1 f (Gnode xs)])
+mapGTree :: (a -> b) -> GTree a -> GTree b
+mapGTree f (Leaf a) = Leaf (f a)
+mapGTree f (Gnode xs) = mapHelper [] f (Gnode xs)
+  where
+    mapHelper new f (Gnode []) = Gnode new
+    mapHelper new f (Gnode (x:xs)) = mapHelper (new ++ [mapGTree f x]) f (Gnode xs)
+-- lol just made it on random. Is it a mutual recursion? xD
 
 -- flatten a GTree to a list
+test1 (Leaf a) = [a]
+test1 (Gnode xs) = test2 [] (Gnode xs)
+  where
+    test2 new (Gnode []) = new
+    test2 new (Gnode (x:xs)) = test2 (new ++ test1 x) (Gnode xs)
 
 -- 14.34
 -- How is the completely empty tree represented as a GTree
--- Gnode []
--- or Leaf []
+-- Gnode [] or Leaf []
