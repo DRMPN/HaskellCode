@@ -659,3 +659,63 @@ mapPerhabs g (Something a) = Something (g a)
 
 -- or trap value
 -- maybe :: b -> (a -> b) -> Maybe a -> b
+
+-- 14.35
+-- Define a function
+
+-- takes nth and mth items of the list of numbers and returns their sum
+-- return 0 if either of the numbers is not one of the indices from 0 to length-1
+process :: [Int] -> Int -> Int -> Int
+process list n m
+  | nth == Nothing || mth == Nothing = 0
+  | otherwise = nth `plus` mth
+    where
+      nth = takeIndex list n
+      mth = takeIndex list m
+      plus (Just x) (Just y) = x + y
+
+takeIndex :: [a] -> Int -> Maybe a
+takeIndex lon ind
+  | (length lon)-1 < ind || (ind < 0) = Nothing
+  | otherwise = findIndex lon ind 0
+    where
+      findIndex (x:xs) ind num
+        | ind == num = Just x
+        | otherwise = findIndex xs ind (num+1)
+
+-- 14.36
+-- Discuss the advantages and disadventages of the three approaches to error handling
+
+-- 14.37
+-- What are the values of type Maybe (Maybe a) - literally any values
+-- Define a function
+-- which squash Just (Just x) to Just x and all other values to Nothing
+squashMaybe :: Maybe (Maybe a) -> Maybe a
+squashMaybe (Nothing) = Nothing
+squashMaybe (Just x) = x
+
+-- 14.38
+-- In a similar way to mapMaybe, define the function
+composeMaybe :: (a -> Maybe b) -> (b -> Maybe c) -> (a -> Maybe c)
+composeMaybe f g = squashMaybe . (mapMaybe g) . f
+
+-- 14.39
+data Err a = OK a | Error String
+-- How do the definitions of mapMaybe, maybe and composeMaybe have to be modified to accommodate this new definititon?
+
+mapErr :: (a -> b) -> Err a -> Err b
+mapErr g (Error x) = Error x
+mapErr g (OK a) = OK (g a)
+
+err :: b -> (a -> b) -> Err a -> b
+err n f (Error x) = n
+err n f (OK x) = f x
+
+squashErr :: Err (Err a) -> Err a
+squashErr (Error x) = Error x
+squashErr (OK a) = a
+
+composeErr :: (a -> Err b) -> (b -> Err c) -> (a -> Err c)
+composeErr f g = squashErr . (mapErr g) . f
+
+-- TODO redo this exercise
