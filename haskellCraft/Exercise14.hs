@@ -520,7 +520,31 @@ showBiog (Parent st perList) = st ++ concat (map showPerson perList)
 showBiog (NonParent st) = st
 
 -- 14.27
--- TODO Too complicated task for now.
+-- Extend the type Expr to that it contains conditional expressions
+
+data Exp = Liter Int |
+           Oper Ops Exp Exp |
+           If BExp Exp Exp
+
+data BExp = BoolLiter Bool |
+            And BExp BExp |
+            Not BExp |
+            Equal Exp Exp |
+            Greater Exp Exp
+
+-- TODO Define functions by mutual recursion
+
+-- eval :: Exp -> Int
+-- evaluate Oper
+-- other redirect if to bEval
+-- If b e1 e2 *** If b has the value True then e1 otherwise e2
+
+-- bEval :: BExp -> Bool
+-- evaluate And Not
+-- other redirect to eval
+-- Greater e1 e2 *** is True when e1 is larger then e2
+
+-- TODO Extend the function 'show' to show the redefined type of expressions
 
 -- 14.28
 -- Investigate which of the functions over trees discussed in the exercises of Section 14.2 can be made polymorphic.
