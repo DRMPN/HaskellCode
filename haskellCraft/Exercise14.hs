@@ -524,25 +524,40 @@ showBiog (NonParent st) = st
 
 data Exp = Liter Int |
            Oper Ops Exp Exp |
-           If BExp Exp Exp
+           If BExp Exp Exp deriving (Show)
 
 data BExp = BoolLiter Bool |
             And BExp BExp |
             Not BExp |
             Equal Exp Exp |
-            Greater Exp Exp
+            Greater Exp Exp deriving (Show)
 
--- TODO Define functions by mutual recursion
-
--- eval :: Exp -> Int
+-- Define functions by mutual recursion
 -- evaluate Oper
 -- other redirect if to bEval
 -- If b e1 e2 *** If b has the value True then e1 otherwise e2
+eval :: Exp -> Int
+eval (Liter n) = n
+eval (Oper ops e1 e2) = case ops of
+  AddMod -> (eval e1) + (eval e2)
+  SubMod -> (eval e1) - (eval e2)
+  MulMod -> (eval e1) * (eval e2)
+  DivMod -> (eval e1) `div` (eval e2)
+eval (If bexp e1 e2)
+  | bEval bexp = (eval e1)
+  | otherwise =(eval e2)
 
--- bEval :: BExp -> Bool
 -- evaluate And Not
 -- other redirect to eval
 -- Greater e1 e2 *** is True when e1 is larger then e2
+bEval :: BExp -> Bool
+bEval (BoolLiter b) = b
+bEval (And be1 be2) = (bEval be1) && (bEval be2)
+bEval (Not be1)
+  | bEval be1 = False
+  | otherwise = True
+bEval (Equal e1 e2) = (eval e1) == (eval e2)
+bEval (Greater e1 e2) = (eval e1) > (eval e2)
 
 -- TODO Extend the function 'show' to show the redefined type of expressions
 
