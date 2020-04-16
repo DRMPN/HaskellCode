@@ -498,7 +498,7 @@ prop2_reflectTree
 -- 14.25
 -- Define functions
 collapseTree, sortTree :: NTree -> [Int]
--- TODO reforge this funciton to use a mutual recursive
+-- Later TODO reforge this funciton to use a mutual recursive
 collapseTree NilT = []
 collapseTree (Node n t1 t2) = (collapseTree t1) ++ [n] ++ (collapseTree t2)
 
@@ -536,6 +536,7 @@ data BExp = BoolLiter Bool |
 -- evaluate Oper
 -- other redirect if to bEval
 -- If b e1 e2 *** If b has the value True then e1 otherwise e2
+-- My first attempt of using the "case ... of ... -> ..." notation
 eval :: Exp -> Int
 eval (Liter n) = n
 eval (Oper ops e1 e2) = case ops of
@@ -559,7 +560,19 @@ bEval (Not be1)
 bEval (Equal e1 e2) = (eval e1) == (eval e2)
 bEval (Greater e1 e2) = (eval e1) > (eval e2)
 
--- TODO Extend the function 'show' to show the redefined type of expressions
+-- Extend the function 'show' to show the redefined type of expressions
+showEval :: Exp -> String
+showEval (Liter n) = show n
+showEval (If bexp e1 e2)
+  | bEval bexp = (showEval e1)
+  | otherwise = (showEval e2)
+showEval (Oper ops e1 e2)
+  | ops == AddMod = combineWith "+"
+  | ops == SubMod = combineWith "-"
+  | ops == MulMod = combineWith "*"
+  | otherwise = combineWith "/"
+    where
+      combineWith operator = "(" ++ showEval e1 ++ operator ++ showEval e2 ++ ")"
 
 -- 14.28
 -- Investigate which of the functions over trees discussed in the exercises of Section 14.2 can be made polymorphic.
@@ -757,4 +770,4 @@ squashErr (OK a) = a
 composeErr :: (a -> Err b) -> (b -> Err c) -> (a -> Err c)
 composeErr f g = squashErr . (mapErr g) . f
 
--- TODO redo this exercise
+-- TODO redo this exercise properly
