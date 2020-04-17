@@ -1,6 +1,8 @@
 import qualified Data.Char as C
 import qualified Data.List as L
 
+import Ex5_10
+
 -- 5.1
 maxOccurs :: Int -> Int -> (Int,Int)
 maxOccurs a b =
@@ -81,7 +83,7 @@ capitalizeLetters xs = [C.toUpper x | x <- xs , C.isLetter x]
 
 -- 5.10
 
--- in ass.hs
+-- in Ex5_10.hs
 
 -- 5.11
 
