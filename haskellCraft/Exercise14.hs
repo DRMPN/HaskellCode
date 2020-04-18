@@ -771,3 +771,75 @@ composeErr :: (a -> Err b) -> (b -> Err c) -> (a -> Err c)
 composeErr f g = squashErr . (mapErr g) . f
 
 -- TODO redo this exercise properly
+
+-- 14.40
+-- Design an algebraic data type to keep a record of vehicles
+--    which will use a particualr car park.
+data Car = Car Model PlateNumber
+type Model = String
+type PlateNumber = String
+
+data CarPark = Empty | Taken Car Arrival Departure
+-- (hours, minutes)
+-- we can calculate how much time a car spent in the park
+type Arrival = (Int, Int)
+type Departure = (Int, Int)
+
+-- 14.41
+-- How would you modify your previous answer that the records of vehicles were to be used for comparative tests of fuel efficency
+-- ill modify car definition to add FuelEffic
+
+-- 14.42
+-- Discuss the data types you might use in a database of students' marks for classes
+data Student = Student FullName Year
+type FullName = String
+type Year = Int
+
+data Class = Class ClassName [ ( Student, [ Mark ] ) ]
+type ClassName = String
+type Mark = Either Char Int -- like either Grade A,B or Score 0-100
+
+-- 14.43
+-- TODO What data types might be used to represent the objects which can be drawn
+--        using an interactive drawing progam?
+data Shapes = Square | Star -- etc
+data Tools = Eraser | Pencil -- etc
+
+-- 14.44
+-- How would you modify the edit distance program to accommodate a Swap operation,
+--  which can be used to transform "abxyz" to "baxyz" in a single step?
+-- TODO Reforge this (change ord)
+data Edit = Change Char |
+            Copy |
+            Delete |
+            Insert Char |
+            Kill |
+            Swap Char Char
+            deriving (Eq,Show)
+
+-- fond the lowest-cost sequence of edits to take us from one string to another
+transform :: String -> String -> [Edit]
+transform [] [] = []
+transform xs [] = [Kill]
+transform [] ys = map Insert ys
+transform (x:xs) (y:ys)
+  | x == y = Copy : transform xs ys
+  | otherwise = best [ Delete : transform xs (y:ys),
+                       Insert y : transform (x:xs) ys,
+                       Change y : transform xs ys ]
+
+-- choose the best sequence
+best :: [[Edit]] -> [Edit]
+best [x] = x
+best (x:xs)
+  | cost x <= cost b = x
+  | otherwise = b
+    where b = best xs
+
+-- cost is given by charging one for every operation except copy
+cost :: [Edit] -> Int
+cost = length . filter (/=Copy)
+
+-- 14.45
+-- Write a definition which when given a list of edits and a string
+--  returns the sequense of strings given by applying the edits to string is sequence
