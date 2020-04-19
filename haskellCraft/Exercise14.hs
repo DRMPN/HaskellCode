@@ -824,9 +824,15 @@ transform xs [] = [Kill]
 transform [] ys = map Insert ys
 transform (x:xs) (y:ys)
   | x == y = Copy : transform xs ys
+  | [x] == y2 && [y] == x2 = Swap x y : transform xs2 ys2
   | otherwise = best [ Delete : transform xs (y:ys),
                        Insert y : transform (x:xs) ys,
                        Change y : transform xs ys ]
+  where x2 = take 1 xs
+        y2 = take 1 ys
+        xs2 = drop 1 xs
+        ys2 = drop 1 ys
+
 
 -- choose the best sequence
 best :: [[Edit]] -> [Edit]
@@ -843,3 +849,16 @@ cost = length . filter (/=Copy)
 -- 14.45
 -- Write a definition which when given a list of edits and a string
 --  returns the sequense of strings given by applying the edits to string is sequence
+
+
+-- function listOfEdits String listOfStrings
+
+-- do this till loe is empty -- base case
+-- produce lostrings -- end case
+
+-- take 1 element of loe
+-- change string with that element
+  -- try to implement with case of
+  -- 6 operations
+  -- kill delete insert copy change swap
+-- add changed string to lostrings
