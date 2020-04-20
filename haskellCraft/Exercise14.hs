@@ -818,6 +818,7 @@ data Edit = Change Char |
             deriving (Eq,Show)
 
 -- fond the lowest-cost sequence of edits to take us from one string to another
+-- TODO try to reimplement swap thing
 transform :: String -> String -> [Edit]
 transform [] [] = []
 transform xs [] = [Kill]
@@ -833,7 +834,6 @@ transform (x:xs) (y:ys)
         xs2 = drop 1 xs
         ys2 = drop 1 ys
 
-
 -- choose the best sequence
 best :: [[Edit]] -> [Edit]
 best [x] = x
@@ -848,17 +848,33 @@ cost = length . filter (/=Copy)
 
 -- 14.45
 -- Write a definition which when given a list of edits and a string
---  returns the sequense of strings given by applying the edits to string is sequence
+-- returns the sequense of strings given by applying the edits to string is sequence
 
+-- TODO regorge, so that function will combine begst and endst and append it to the los everytime.
+-- example test [] begst endst los = los ++ [begst ++ endst]
+-- improves readability of the function
 
--- function listOfEdits String listOfStrings
+-- test [Edit] "" "abc" []
+-- test listOfEdits beginningOfString endOfString listOfStrings
+test [] begst endst los = los
+test (x:xs) begst (c:cs) los =
+  case x of
+    Kill -> test xs begst "" (los ++ [begst ++ ""])
+    Delete -> test xs begst cs (los++[begst++cs])
+    Copy -> test xs (begst++[c]) cs (los++[begst++(c:cs)])
+    -- problem with inserting at the end of the string
+    Insert ch -> test xs begSt (c:cs) (los ++ [begSt ++ (c:cs)])
+      where begSt = begst ++ [ch]
+    Change ch -> test xs begSt cs (los ++ [begSt ++ cs])
+      where begSt = begst ++ [ch]
+    Swap ch1 ch2 -> test xs begSt endSt (los ++ [begSt ++ endSt])
+      where begSt = begst ++ [ch2] ++ [ch1]
+            endSt = drop 1 cs
 
--- do this till loe is empty -- base case
--- produce lostrings -- end case
-
--- take 1 element of loe
--- change string with that element
-  -- try to implement with case of
-  -- 6 operations
-  -- kill delete insert copy change swap
--- add changed string to lostrings
+-- 14.46
+-- Give a calculation of transform "cat" "am".
+-- What do you conclude about the efficiency of the transform function?
+{-
+I won't do the calculatin of tranform function just because I'm lazy.
+I alredy know that the function "bruteforcing" given value, therefore the efficiency of the program is worse. The program calculates lists of edits for one char in like x^7.
+-}
