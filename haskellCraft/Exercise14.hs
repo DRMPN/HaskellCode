@@ -808,17 +808,26 @@ data Tools = Eraser | Pencil -- etc
 -- 14.44
 -- How would you modify the edit distance program to accommodate a Swap operation,
 --  which can be used to transform "abxyz" to "baxyz" in a single step?
--- TODO Reforge this (change ord)
-data Edit = Change Char |
-            Copy |
+data Edit = Copy |
+            Kill |
             Delete |
             Insert Char |
-            Kill |
+            Change Char |
             Swap Char Char
             deriving (Eq,Show)
 
 -- fond the lowest-cost sequence of edits to take us from one string to another
+
 -- TODO try to reimplement swap thing
+{-
+Possible solution :
+| isSwapable (x:xs) (y:ys) =
+                    Swap (swapFunction x) (swapFunction y) : transform
+   where isSwapable st1 st2 = ...
+
+swapFunction st1 st2 = ...
+-}
+
 transform :: String -> String -> [Edit]
 transform [] [] = []
 transform xs [] = [Kill]
@@ -849,27 +858,25 @@ cost = length . filter (/=Copy)
 -- 14.45
 -- Write a definition which when given a list of edits and a string
 -- returns the sequense of strings given by applying the edits to string is sequence
-
--- TODO regorge, so that function will combine begst and endst and append it to the los everytime.
--- example test [] begst endst los = los ++ [begst ++ endst]
--- improves readability of the function
-
--- test [Edit] "" "abc" []
--- test listOfEdits beginningOfString endOfString listOfStrings
-test [] begst endst los = los
-test (x:xs) begst (c:cs) los =
-  case x of
-    Kill -> test xs begst "" (los ++ [begst ++ ""])
-    Delete -> test xs begst cs (los++[begst++cs])
-    Copy -> test xs (begst++[c]) cs (los++[begst++(c:cs)])
-    -- problem with inserting at the end of the string
-    Insert ch -> test xs begSt (c:cs) (los ++ [begSt ++ (c:cs)])
-      where begSt = begst ++ [ch]
-    Change ch -> test xs begSt cs (los ++ [begSt ++ cs])
-      where begSt = begst ++ [ch]
-    Swap ch1 ch2 -> test xs begSt endSt (los ++ [begSt ++ endSt])
-      where begSt = begst ++ [ch2] ++ [ch1]
-            endSt = drop 1 cs
+preserveList :: [Edit] -> String -> [String]
+preserveList loe st = redo loe "" st []
+  where
+-- redo listOfEdits beginningOfString endOfString listOfStrings
+    redo [] begst endst los = los ++ [begst ++ endst]
+    redo (x:xs) begst (c:cs) los =
+      case x of
+        Kill -> redo xs begst "" newlos
+        Delete -> redo xs begst cs newlos
+        Copy -> redo xs (begst++[c]) cs newlos
+-- TODO problem with inserting at the end of the string
+        Insert ch -> redo xs begSt (c:cs) newlos
+          where begSt = begst ++ [ch]
+        Change ch -> redo xs begSt cs newlos
+          where begSt = begst ++ [ch]
+        Swap ch1 ch2 -> redo xs begSt endSt newlos
+          where begSt = begst ++ [ch2] ++ [ch1]
+                endSt = drop 1 cs
+      where newlos = los ++ [begst ++ (c:cs)]
 
 -- 14.46
 -- Give a calculation of transform "cat" "am".
