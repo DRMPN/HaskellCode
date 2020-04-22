@@ -133,10 +133,10 @@ data NewShape = NewCircle (Float) (Float,Float) |
 
 -- 14.10
 -- Define a function which moves a shape by the two offsets
-move :: Float -> Float -> NewShape -> NewShape
-move x y (NewCircle rad (x0,y0)) = NewCircle rad (x0+x,y0+y)
-move x y (NewRectangle sides (x0,y0)) = NewRectangle sides (x0+x,y0+y)
-move x y (NewTriangle sides (x0,y0)) = NewTriangle sides (x0+x,y0+y)
+moveShape :: Float -> Float -> NewShape -> NewShape
+moveShape x y (NewCircle rad (x0,y0)) = NewCircle rad (x0+x,y0+y)
+moveShape x y (NewRectangle sides (x0,y0)) = NewRectangle sides (x0+x,y0+y)
+moveShape x y (NewTriangle sides (x0,y0)) = NewTriangle sides (x0+x,y0+y)
 
 -- 14.11
 -- Define a function to test whether to NewShapes overlap
