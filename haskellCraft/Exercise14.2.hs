@@ -85,3 +85,18 @@ instance Movable b => Movable (b,c) where
 instance Named c => Named (b,c) where
   lookName (_, c) = lookName c
   giveName nm (obj, c) = (obj, giveName nm c)
+
+-- Exercise 14.48
+-- Show that the method of the previous question can be used to combine instances of any two classes
+-- Ill use the induction and I would say that if it works for previous question then it works for any two classes.
+
+-- Exercise 14.49
+-- answer is the same
+
+-- Exercise 14.50
+-- Extend the collection of operations for moving objects to include scaling and rotation by an arbitary angle
+-- This can be done by re-defining Movable or by defining a class MovablePlus over the class Movable.
+
+class Movable a => MovablePlus a where
+  scale :: Int -> a -> a
+  rotate :: Int -> a -> a
