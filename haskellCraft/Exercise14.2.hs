@@ -98,5 +98,23 @@ instance Named c => Named (b,c) where
 -- This can be done by re-defining Movable or by defining a class MovablePlus over the class Movable.
 
 class Movable a => MovablePlus a where
-  scale :: Int -> a -> a
-  rotate :: Int -> a -> a
+  scale :: Float -> a -> a
+  rotate :: Float -> a -> a
+
+instance MovablePlus Point where
+  scale n (Point x y) = Point (n*x) y
+  rotate n (Point x y) = Point x y
+
+instance MovablePlus Figure where
+  scale n (Line p1 p2) = Line p1 (scale n p2)
+  scale n (Circle p r) = Circle p (n*r)
+  -- we dont change x coordinate while rotating a line
+  -- one way to solve - try to implement super formula
+  -- another way - add an angle to line definition ez clap
+  rotate n (Line p1 p2) = Line p1 p2
+  rotate n (Circle p r) = Circle p r
+
+-- Exercise 14.51
+-- Design a collection of classes to model bank accounts.
+-- These have different forms: current, deposit and so on, as well as different levels of functionality
+-- Can you reuse the Named class here?
