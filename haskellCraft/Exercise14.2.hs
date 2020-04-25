@@ -118,3 +118,11 @@ instance MovablePlus Figure where
 -- Design a collection of classes to model bank accounts.
 -- These have different forms: current, deposit and so on, as well as different levels of functionality
 -- Can you reuse the Named class here?
+
+-- information about person such as date of birth and living place, income?
+
+-- make an instance of class Named for new bank class
+
+-- unite that to cardholder account with personal number ans so on
+
+-- probably something about money i.e. how many money does a person have on the account
