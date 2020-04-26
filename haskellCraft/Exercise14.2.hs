@@ -119,10 +119,37 @@ instance MovablePlus Figure where
 -- These have different forms: current, deposit and so on, as well as different levels of functionality
 -- Can you reuse the Named class here?
 
--- information about person such as date of birth and living place, income?
+--------------------------------------------------------------
+-- Information about person
+--------------------------------------------------------------
+data BankPerson = BankPerson Fname Lname
+                  Sex
+                  DateOfBirth
+                  HomeAddress
+                deriving (Show)
 
--- make an instance of class Named for new bank class
+type Fname = String
+type Lname = String
+data Sex = M | F deriving (Show)
+type DateOfBirth = String
+type HomeAddress = String
 
--- unite that to cardholder account with personal number ans so on
+--------------------------------------------------------------
+-- remake to data and add some information about loan and etc
+--------------------------------------------------------------
+type Invoice = Int
+type AccountNumber = Int
 
--- probably something about money i.e. how many money does a person have on the account
+--------------------------------------------------------------
+-- Bank account itself
+--------------------------------------------------------------
+data BankAccount = BankAccount BankAccountType
+                   AccountNumber
+                   BankPerson
+                   Invoice
+
+data BankAccountType = Individual | Business
+
+--------------------------------------------------------------
+-- Class definitions
+--------------------------------------------------------------
