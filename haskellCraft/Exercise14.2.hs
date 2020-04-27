@@ -122,14 +122,13 @@ instance MovablePlus Figure where
 --------------------------------------------------------------
 -- Information about person
 --------------------------------------------------------------
-data BankPerson = BankPerson Fname Lname
+data BankPerson = BankPerson FullName
                   Sex
                   DateOfBirth
                   HomeAddress
                 deriving (Show)
 
-type Fname = String
-type Lname = String
+type FullName = String
 data Sex = M | F deriving (Show)
 type DateOfBirth = String
 type HomeAddress = String
@@ -137,7 +136,7 @@ type HomeAddress = String
 --------------------------------------------------------------
 -- remake to data and add some information about loan and etc
 --------------------------------------------------------------
-type Invoice = Int
+type Invoice = Float
 type AccountNumber = Int
 
 --------------------------------------------------------------
@@ -147,9 +146,41 @@ data BankAccount = BankAccount BankAccountType
                    AccountNumber
                    BankPerson
                    Invoice
+                   deriving (Show)
 
 data BankAccountType = Individual | Business
-
+                     deriving (Show)
 --------------------------------------------------------------
 -- Class definitions
 --------------------------------------------------------------
+instance Named BankPerson where
+  lookName (BankPerson fn _ _ _) = fn
+  giveName newname (BankPerson _ sx dob ha) =
+    (BankPerson newname sx dob ha)
+
+instance Named BankAccount where
+  lookName (BankAccount _ _ per _) = (lookName per)
+  giveName name (BankAccount t n p i) =
+    (BankAccount t n (giveName name p) i)
+
+-- Definitions for person
+class Named a => Person a where
+  lookSex :: a -> Sex
+  lookAdd :: a -> String
+
+instance Person BankPerson where
+  lookSex (BankPerson _ s _ _) = s
+  lookAdd (BankPerson _ _ _ ha) = ha
+
+instance Person BankAccount where
+  lookSex (BankAccount _ _ p _) = lookSex p
+  lookAdd (BankAccount _ _ p _) = lookAdd p
+
+-- Definitions for account
+class Account a where
+  lookBalance :: a -> Float
+  lookAccNum :: a -> Int
+
+instance Account BankAccount where
+  lookBalance (BankAccount _ _ _ i) = i
+  lookAccNum (BankAccount _ n _ _) = n
