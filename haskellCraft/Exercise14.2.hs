@@ -184,3 +184,7 @@ class Account a where
 instance Account BankAccount where
   lookBalance (BankAccount _ _ _ i) = i
   lookAccNum (BankAccount _ n _ _) = n
+
+-- TODO
+-- skipped 14.52 - 14.57 because that is completly boring
+-- plus I cannot be sure that I would do this correctly
