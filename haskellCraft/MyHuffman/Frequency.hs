@@ -1,3 +1,4 @@
+module Frequency where
 
 mergeSort :: ([a] -> [a] -> [a]) -> [a] -> [a]
 mergeSort merge xs
