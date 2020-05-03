@@ -2,7 +2,7 @@ module MakeTree where
 
 import Types
 
-makeTree :: [ (Char,Int)] -> Tree
+makeTree :: [ (Char,Int) ] -> Tree
 makeTree = makeCodes . toTreeList
 
 toTreeList :: [ (Char, Int)] -> [Tree]
@@ -12,9 +12,10 @@ makeCodes :: [Tree] -> Tree
 makeCodes [t] = t
 makeCodes ts = makeCodes (amalgamate ts)
 
--- TODO definition of insTree is similar as in insertSort
 amalgamate :: [Tree] -> [Tree]
 amalgamate (t1:t2:ts) = insTree (pair t1 t2) ts
+  where
+    insTree a b = b ++ [a]
 
 pair :: Tree -> Tree -> Tree
 pair t1 t2 = Node (v1+v2) t1 t2

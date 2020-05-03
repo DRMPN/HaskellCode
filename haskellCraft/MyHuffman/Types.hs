@@ -20,3 +20,4 @@ type Table = [ (Char, HCode) ]
 -- and therefore the Huffman codes.
 data Tree = Leaf Char Int |
             Node Int Tree Tree
+            deriving (Show)
