@@ -6,7 +6,7 @@ module Queue
   remQ      -- Queue a -> (a, Queue a)
   ) where
 
-newtype Queue a = Qu [a]
+newtype Queue a = Qu [a] deriving Show
 
 emptyQ = Qu []
 
@@ -28,20 +28,18 @@ remQ q@(Qu xs)
   | otherwise = error "remQ"
 -}
 
-{-
-data Queue a = Qu [a] [a]
+data QueueN a = QuN [a] [a] deriving Show
 
-emptyQ = Qu [] []
+emptyQN = QuN [] []
 
-isEmptyQ (Qu [] []) = True
-isEmptyQ _ = False
+isEmptyQN (QuN [] []) = True
+isEmptyQN _ = False
 
-addQ x (Qu xs ys) = Qu xs (x:ys)
+addQN x (QuN xs ys) = QuN xs (x:ys)
 
-remQ (Qu (x:xs) ys) = (x, Qu xs ys)
-remQ (Qu [] (y:ys)) = remQ (Qu (reverse (y:ys)) [])
-remQ (Qu [] []) = error "remQ"
--}
+remQN (QuN (x:xs) ys) = (x, QuN xs ys)
+remQN (QuN [] (y:ys)) = remQN (QuN (reverse (y:ys)) [])
+remQN (QuN [] []) = error "remQ"
 
 -- Ex 16.7
 -- Give calcutation of
@@ -84,3 +82,17 @@ last x = x !! (length x-1)
      a : b : c : d : e : "f" 0
      'f'
 -}
+
+-- Ex 16.8
+-- Explain the behavior of the three queue models
+-- on the following sequence of operations:
+-- add 2, add 1, remove, add 3, remove, add 1, add 4, remove, remove
+
+-- so behavior of 1qm and 2qm is the same
+-- it adds an element to the end of the list
+-- removes first element of the list
+
+-- behavior of the third model
+-- it will always add an element to the beginning of the second list
+-- its removing first element of the first list
+-- if the first list is empty, then it transfers reversed second list to the first list and removes its first element
