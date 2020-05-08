@@ -6,6 +6,8 @@ module Queue
   remQ      -- Queue a -> (a, Queue a)
   ) where
 
+import Deque
+
 newtype Queue a = Qu [a] deriving Show
 
 emptyQ = Qu []
@@ -88,7 +90,7 @@ last x = x !! (length x-1)
 -- on the following sequence of operations:
 -- add 2, add 1, remove, add 3, remove, add 1, add 4, remove, remove
 
--- so behavior of 1qm and 2qm is the same
+  -- so behavior of 1qm and 2qm is the same
 -- it adds an element to the end of the list
 -- removes first element of the list
 
@@ -96,3 +98,6 @@ last x = x !! (length x-1)
 -- it will always add an element to the beginning of the second list
 -- its removing first element of the first list
 -- if the first list is empty, then it transfers reversed second list to the first list and removes its first element
+
+-- Ex 16.9
+-- imported from Deque.hs
