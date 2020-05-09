@@ -1,35 +1,40 @@
--- TODO remove overlapping warning
-
 -- !!! Using lists to implement a Deque is not very efficent
 module Deque
   (Deque,
-   emptyDq, -- Deque a
+   emptyDq,   -- Deque a
    isEmptyDq, -- Deque a -> Bool
-   frontDq,
-   backDq,
-   remFront,
-   remBack,
-   addFront,
-   addBack) where
+   frontDq,   -- Deque a -> a
+   backDq,    -- Deque a -> a
+   remFront,  -- Deque a -> Deque a
+   remBack,   -- Deque a -> Deque a
+   addFront,  -- Deque a -> Deque a
+   addBack    -- Dequq a -> Deque a
+  ) where
 
 newtype Deque a = Deque [a]
+  deriving Show
 
 emptyDq = Deque []
 
-isEmptyDq (Deque []) = True
-isEmptyDq _ = False
+isEmptyDq dq = case dq of
+  Deque [] -> True
+  _ -> False
 
-frontDq (Deque (x:xs)) = x
-frontDq (Deque []) = error "Front element is missing"
+frontDq dq = case dq of
+  Deque [] -> error "Front element is missing"
+  Deque (x:xs) -> x
 
-backDq (Deque a) = last a
-backDq (Deque []) = error "Back element is missing"
+backDq dq = case dq of
+  Deque [] -> error "Back element is missing"
+  Deque q@(x:xs) -> last q
 
-remFront (Deque (x:xs)) = Deque xs
-remFront (Deque []) = error "There's nothing to remove"
+remFront dq = case dq of
+  Deque [] -> error "There's nothing to remove"
+  Deque (x:xs) -> Deque xs
 
-remBack (Deque a) = init a
-remBack (Deque []) = error "There's nothing to remove"
+remBack dq = case dq of
+  Deque [] -> error "There's nothing to remove"
+  Deque q@(x:xs) -> Deque $ init q
 
 addFront x (Deque xs) = Deque (x:xs)
 
