@@ -7,6 +7,7 @@ module Queue
   ) where
 
 import Deque
+import Data.List (elem)
 
 newtype Queue a = Qu [a] deriving Show
 
@@ -101,3 +102,8 @@ last x = x !! (length x-1)
 
 -- Ex 16.9
 -- imported from Deque.hs
+
+-- Ex 16.10
+-- A unique queue can contain only one occurrence of each entry
+addUnQ x (Qu xs) =
+  if elem x xs then Qu xs else Qu (xs ++ [x])
