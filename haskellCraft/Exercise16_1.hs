@@ -55,3 +55,32 @@ testValue (Tes ((n,w):tes)) v
   | null n = n
   | v == w = n
   | otherwise = testValue (Tes tes) v
+
+-- Ex 16.13
+-- Are all the operations in the Tree a signature necessary?
+-- Identify those which can be implemented using the other
+-- operations of the signature.
+{-
+We can use nil to check if a tree is empty or if a tree is a node,
+therefore we would omit functions like isNil and isNode
+testTree :: Tree
+nil == testTree
+True -> It's empty
+False -> It's a node
+If we won't use treeVal function to get a value from a tree, then
+it could be ommited
+
+leftSub or rightSub could be defined as global or local funcrions
+and used to implement other functions like insTree or delete
+
+I'm not sure about minTree functions
+-}
+
+-- Ex 16.14
+-- Design a signature for an abstract type of library databases.
+{-
+In my opinions we can use simple implementation like this:
+newtype Database a = Db [a]
+
+so it could be a list of customers/employees/items etc
+-}
