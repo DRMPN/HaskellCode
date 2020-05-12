@@ -84,3 +84,7 @@ newtype Database a = Db [a]
 
 so it could be a list of customers/employees/items etc
 -}
+
+-- Ex 16.17
+-- Design a signature for round-robin simulation
+newtype RoundRobin a = RoundRobin [ (Int, a) ]
