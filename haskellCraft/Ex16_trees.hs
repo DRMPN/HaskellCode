@@ -53,3 +53,21 @@ delete val (Node v t1 t2)
   | isNil t2 = t1
   | isNil t1 = t2
   | otherwise = join t1 t2
+
+minTree :: Ord a => Tree a -> Maybe a
+minTree t
+  | isNil t = Nothing
+  | isNil t1 = Just v
+  | otherwise = minTree t1
+  where
+    t1 = leftSub t
+    v = treeVal t
+
+-- Join is an auxiliary function, used in delete
+-- it is not exported.
+join :: Ord a => Tree a -> Tree a -> Tree a
+join t1 t2
+  = Node mini t1 newt
+  where
+    (Just mini) = minTree t2
+    newt = delete mini t2
