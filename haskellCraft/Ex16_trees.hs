@@ -71,3 +71,21 @@ join t1 t2
   where
     (Just mini) = minTree t2
     newt = delete mini t2
+
+-- find nth element of a tree
+indexT :: Int -> Tree a -> a
+indexT n t
+  | isNil t = error "empty Tree"
+  | n < st1 = indexT n t1
+  | n == st1 = v
+  | otherwise = indexT (n-st1-1) t2
+  where
+    v = treeVal t
+    t1 = leftSub t
+    t2 = rightSub t
+    st1 = size t1
+
+size :: Tree a -> Int
+size t
+  | isNil t = 0
+  | otherwise = 1 + size (leftSub t) + size (rightSub t)
