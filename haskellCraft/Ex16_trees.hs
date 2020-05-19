@@ -89,3 +89,21 @@ size :: Tree a -> Int
 size t
   | isNil t = 0
   | otherwise = 1 + size (leftSub t) + size (rightSub t)
+
+
+-- Think if making the size operation more efficent
+-- by changing the implementation of the Tree
+
+data Stree a = Snil | Snode a Int (Stree a) (Stree a)
+
+insStree val Snil = (Snode val 1 Snil Snil)
+insStree val (Snode v n st1 st2)
+  | v == val = Snode v n st1 st2
+  | val > v = Snode v (1 + sizeS st1 + sizeS st2) st1 nst2
+  | val < v = Snode v (1 + sizeS nst1 + sizeS st2) nst1 st2
+    where
+      nst1 = insStree val st1
+      nst2 = insStree val st2
+
+sizeS Snil = 0
+sizeS (Snode _ n _ _) = n
