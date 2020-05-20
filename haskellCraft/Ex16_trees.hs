@@ -107,3 +107,16 @@ insStree val (Snode v n st1 st2)
 
 sizeS Snil = 0
 sizeS (Snode _ n _ _) = n
+
+-- Exercise 16.25
+-- Explain how would you test the implementation of the functions over search trees
+-- 1) I would make 2 test trees, one is empty, second contains 2 or more nodes
+-- 2) Firstly, test simple functions
+-- 3) Compare your desired result and an output
+--    If output is not correct to expected result, then find bugs in functions or in test values
+--    If everything works, go it again with larger funcitons
+-- 4) If something is not working correctly, and I cannot explain why, I'll do it step by step
+--    through lambda funcitons in a shell
+-- 5) Is all test passed? Then, no bugs has founded
+
+-- Exercise 16.26
