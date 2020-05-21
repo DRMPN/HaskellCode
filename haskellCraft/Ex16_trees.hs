@@ -11,7 +11,11 @@ module Tree
     minTree)  -- Ord a => Tree a -> Maybe a
   where
 
+import Data.List (sort)
+
+-- TODO make instances
 data Tree a = Nil | Node a (Tree a) (Tree a)
+  deriving (Eq, Ord, Show)
 
 nil :: Tree a
 nil = Nil
@@ -120,3 +124,27 @@ sizeS (Snode _ n _ _) = n
 -- 5) Is all test passed? Then, no bugs has founded
 
 -- Exercise 16.26
+-- Define the functions
+successor :: Ord a => a -> Tree a -> Maybe a
+successor value tree
+  = takeSucc value . sort $ loSucc value tree
+  where
+    -- make a list of successors out of a tree
+    loSucc v Nil = []
+    loSucc v (Node val t1 t2)
+      | val >= v = (loSucc v t1) ++ [val] ++ (loSucc v t2)
+      | otherwise = (loSucc v t1) ++ (loSucc v t2)
+    -- take successor of a list
+    takeSucc v (x:x1:xs)
+      | x > v = Just x
+      | otherwise = Just x1
+    takeSucc v _ = Nothing
+
+testTree :: Tree Int
+testTree = Node 2
+  (Node 1 (Node 0 Nil Nil) (Nil))
+  (Node 3 (Nil) (Node 4 Nil Nil))
+
+testTreeTwo :: Fractional a => Tree a
+testTreeTwo = Node 2.5 (Node 3.5 (Node 1.5 Nil Nil) Nil) (Node 7.5 (Node 5 Nil Nil) (Node 11 (Node 6.6 Nil Nil) Nil))
+
