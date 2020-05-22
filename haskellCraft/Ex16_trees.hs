@@ -98,6 +98,8 @@ size t
 -- Think if making the size operation more efficent
 -- by changing the implementation of the Tree
 
+-- TODO: Reimplement previous functions with this implementation
+
 data Stree a = Snil | Snode a Int (Stree a) (Stree a)
 
 insStree val Snil = (Snode val 1 Snil Snil)
@@ -125,6 +127,7 @@ sizeS (Snode _ n _ _) = n
 
 -- Exercise 16.26
 -- Define the functions
+-- successor of v in tree t is the smallest value t larger than v
 successor :: Ord a => a -> Tree a -> Maybe a
 successor value tree
   = takeSucc value . sort $ loSucc value tree
@@ -148,3 +151,15 @@ testTree = Node 2
 testTreeTwo :: Fractional a => Tree a
 testTreeTwo = Node 2.5 (Node 3.5 (Node 1.5 Nil Nil) Nil) (Node 7.5 (Node 5 Nil Nil) (Node 11 (Node 6.6 Nil Nil) Nil))
 
+-- Closest value to v in a numerical tree t is a value in t
+-- which has the smallest difference from v
+closest :: Int -> Tree Int -> Int
+closest v t = 0
+
+-- try to do this with accumulator
+-- simple example
+-- if (v - abs $ n) < acc
+--  then change acc
+--  else don't change acc
+
+-- or do this as succ function, defined previously
