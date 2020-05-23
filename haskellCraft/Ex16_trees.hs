@@ -156,6 +156,28 @@ testTreeTwo = Node 2.5 (Node 3.5 (Node 1.5 Nil Nil) Nil) (Node 7.5 (Node 5 Nil N
 closest :: Int -> Tree Int -> Int
 closest v t = 0
 
+allItems t = case t of
+  Nil -> []
+  Node v t1 t2 -> [v] ++ (allItems t1) ++ (allItems t2)
+
+{-
+smallDiff v [] acc1 acc2 = acc2
+smallDiff v (x:xs) acc1 acc2
+  | diff < acc1 = smallDiff v xs diff x
+  | otherwise = smallDiff v xs acc1 acc2
+  where
+    diff = v - abs x
+-}
+
+testFoldr v list = foldr1 (\ n acc ->
+                        if (v - abs n) < acc
+                        then n
+                        else acc) list
+
+testValue v t = (v - abs n)
+  where
+    n = treeVal t
+
 -- try to do this with accumulator
 -- simple example
 -- if (v - abs $ n) < acc
