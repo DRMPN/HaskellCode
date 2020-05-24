@@ -127,12 +127,24 @@ sizeS (Snode _ n _ _) = n
 
 -- Exercise 16.26
 -- Define the functions
--- successor of v in tree t is the smallest value t larger than v
+
+-- test values
+testTreeOne :: Tree Int
+testTreeOne = Node 2
+  (Node 1 (Node 0 Nil Nil) (Nil))
+  (Node 3 (Nil) (Node 6 Nil Nil))
+
+testTreeTwo :: Fractional a => Tree a
+testTreeTwo = Node 2.5 (Node 3.5 (Node 1.5 Nil Nil) Nil) (Node 7.5 (Node 5 Nil Nil) (Node 11 (Node 6.6 Nil Nil) Nil))
+
+-- 1) Funciton
+  -- successor of v in tree t is the smallest value t
+  -- larger than v
 successor :: Ord a => a -> Tree a -> Maybe a
 successor value tree
   = takeSucc value . sort $ loSucc value tree
   where
-    -- make a list of successors out of a tree
+    -- make a list of numbers that are bigger then given value
     loSucc v Nil = []
     loSucc v (Node val t1 t2)
       | val >= v = (loSucc v t1) ++ [val] ++ (loSucc v t2)
@@ -143,45 +155,28 @@ successor value tree
       | otherwise = Just x1
     takeSucc v _ = Nothing
 
-testTree :: Tree Int
-testTree = Node 2
-  (Node 1 (Node 0 Nil Nil) (Nil))
-  (Node 3 (Nil) (Node 4 Nil Nil))
-
-testTreeTwo :: Fractional a => Tree a
-testTreeTwo = Node 2.5 (Node 3.5 (Node 1.5 Nil Nil) Nil) (Node 7.5 (Node 5 Nil Nil) (Node 11 (Node 6.6 Nil Nil) Nil))
-
--- Closest value to v in a numerical tree t is a value in t
--- which has the smallest difference from v
+-- 2) Function
+  -- Closest value to v in a numerical tree t is a value in t
+  -- which has the smallest difference from v
 closest :: Int -> Tree Int -> Int
-closest v t = 0
+closest v Nil = v
+closest v t = smallDiff bnot bnot v $ allNums
+  where
+    -- Biggest number of the given tree
+    bnot = bigNum allNums
+    bigNum l = foldr1 (\v svd -> if svd < v then v else svd) l
+    -- List of all numbers of the tree
+    allNums = allItems t
+    -- Find a closest value in the list to a given number
+    smallDiff _ svd _ [] = svd
+    smallDiff curDif svd v (x:xs)
+      | diff < curDif = smallDiff diff x v xs
+      | otherwise = smallDiff curDif svd v xs
+      where
+        diff = abs $ v - abs x
 
+-- Useful functions so I decided to give a normal definition
+allItems :: Tree a -> [a]
 allItems t = case t of
   Nil -> []
   Node v t1 t2 -> [v] ++ (allItems t1) ++ (allItems t2)
-
-{-
-smallDiff v [] acc1 acc2 = acc2
-smallDiff v (x:xs) acc1 acc2
-  | diff < acc1 = smallDiff v xs diff x
-  | otherwise = smallDiff v xs acc1 acc2
-  where
-    diff = v - abs x
--}
-
-testFoldr v list = foldr1 (\ n acc ->
-                        if (v - abs n) < acc
-                        then n
-                        else acc) list
-
-testValue v t = (v - abs n)
-  where
-    n = treeVal t
-
--- try to do this with accumulator
--- simple example
--- if (v - abs $ n) < acc
---  then change acc
---  else don't change acc
-
--- or do this as succ function, defined previously
