@@ -98,10 +98,36 @@ size t
 -- Think if making the size operation more efficent
 -- by changing the implementation of the Tree
 
--- TODO: Reimplement previous functions with this implementation
-
 data Stree a = Snil | Snode a Int (Stree a) (Stree a)
 
+-- Exercise 16.27
+-- Redefine the functions of the Tree a signature
+-- over the Stree implementation type
+
+snil :: Stree a
+snil = Snil
+
+isSnil, isSnode :: Stree a -> Bool
+isSnil Snil = True
+isSnil _ = False
+
+isSnode (Snode _ _ _ _) = True
+isSnode _ = False
+
+leftSubS, rightSubS :: Stree a -> Stree a
+leftSubS t = case t of
+  Snil -> error "Empty Stree"
+  Snode _ _ t1 _ -> t1
+
+rightSubS t = case t of
+  Snil -> error "Empty Stree"
+  Snode _ _ _ t2 -> t2
+
+sTreeVal :: Stree a -> a
+sTreeVal Snil = error "Empty Stree"
+sTreeVal (Snode v _ _ _) = v
+
+insStree :: Ord a => a -> Stree a -> Stree a
 insStree val Snil = (Snode val 1 Snil Snil)
 insStree val (Snode v n st1 st2)
   | v == val = Snode v n st1 st2
@@ -113,6 +139,11 @@ insStree val (Snode v n st1 st2)
 
 sizeS Snil = 0
 sizeS (Snode _ n _ _) = n
+
+
+-- delete,   -- Ord a => a -> Tree a -> Tree a
+-- minTree  -- Ord a => Tree a -> Maybe a
+
 
 -- Exercise 16.25
 -- Explain how would you test the implementation of the functions over search trees
@@ -180,3 +211,4 @@ allItems :: Tree a -> [a]
 allItems t = case t of
   Nil -> []
   Node v t1 t2 -> [v] ++ (allItems t1) ++ (allItems t2)
+
