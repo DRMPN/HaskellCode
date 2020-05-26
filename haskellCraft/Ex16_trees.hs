@@ -140,10 +140,29 @@ insStree val (Snode v n st1 st2)
 sizeS Snil = 0
 sizeS (Snode _ n _ _) = n
 
+deleteS :: Ord a => a -> Stree a -> Stree a
+deleteS val (Snode v t1 t2)
+  | val < v = Snode v (deleteS val t1) t2
+  | val > v = Snode v t1 (deleteS val t2)
+  | isSnil t2 = t1
+  | isSnil t1 = t2
+  | otherwise = joinS t1 t2
 
--- delete,   -- Ord a => a -> Tree a -> Tree a
--- minTree  -- Ord a => Tree a -> Maybe a
+joinS :: Ord a => Stree a -> Stree a -> Stree a
+joinS t1 t2
+  = Snode mini t1 newt
+  where
+    (Just mini) = minStree t2
+    newt = deleteS mini t2
 
+minTreeS :: Ord a => Stree a -> Maybe a
+minTreeS t
+  | isNil t = Nothing
+  | isNil t1 = Just v
+  | otherwise = minTreeS t1
+  where
+    t1 = leftSubS t
+    v = sTreeVal t
 
 -- Exercise 16.25
 -- Explain how would you test the implementation of the functions over search trees
