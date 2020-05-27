@@ -99,7 +99,7 @@ size t
 -- by changing the implementation of the Tree
 
 data Stree a = Snil | Snode a Int (Stree a) (Stree a)
-
+  deriving (Eq, Ord, Show)
 -- Exercise 16.27
 -- Redefine the functions of the Tree a signature
 -- over the Stree implementation type
@@ -141,24 +141,26 @@ sizeS Snil = 0
 sizeS (Snode _ n _ _) = n
 
 deleteS :: Ord a => a -> Stree a -> Stree a
-deleteS val (Snode v t1 t2)
-  | val < v = Snode v (deleteS val t1) t2
-  | val > v = Snode v t1 (deleteS val t2)
+deleteS val (Snode v n t1 t2)
+  | val < v = Snode v (n-1) (deleteS val t1) t2
+  | val > v = Snode v (n-1) t1 (deleteS val t2)
   | isSnil t2 = t1
   | isSnil t1 = t2
   | otherwise = joinS t1 t2
 
 joinS :: Ord a => Stree a -> Stree a -> Stree a
 joinS t1 t2
-  = Snode mini t1 newt
+  = Snode mini (1+n1+n2) t1 newt
   where
-    (Just mini) = minStree t2
+    (Just mini) = minTreeS t2
     newt = deleteS mini t2
+    n1 = sizeS t1
+    n2 = sizeS t2
 
 minTreeS :: Ord a => Stree a -> Maybe a
 minTreeS t
-  | isNil t = Nothing
-  | isNil t1 = Just v
+  | isSnil t = Nothing
+  | isSnil t1 = Just v
   | otherwise = minTreeS t1
   where
     t1 = leftSubS t
