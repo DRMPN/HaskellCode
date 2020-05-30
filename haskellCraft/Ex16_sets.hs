@@ -14,14 +14,16 @@ module Set
     card                -- Set a -> Int
   ) where
 
-import List hiding ( union )
+import Data.List hiding ( union )
 
-newtype Set s = SetI [a]
+newtype Set s = SetI [s]
 
 instance Eq a => Eq (Set a) where
   (==) = eqSet
 instance Ord a => Ord (Set a) where
   (<=) = leqSet
+instance Show a => Show (Set a) where
+  show (SetI x) = show x
 
 empty :: Set a
 empty = SetI []
@@ -45,7 +47,7 @@ uni [] ys = ys
 uni xs [] = xs
 uni xn@(x:xs) yn@(y:ys)
   | x < y = x : uni xs yn
-  | x = y = x : uni xs ys
+  | x == y = x : uni xs ys
   | otherwise = y : uni xn ys
 
 -- inter {Joe,Sue} {Sue,Ben} = {Sue}
@@ -60,8 +62,20 @@ int xn@(x:xs) yn@(y:ys)
   | x == y = x : int xs ys
   | otherwise = int xn ys
 
--- define diff funciton
+-- Ex 16.33
+-- Define the function diff so that diff s1 s2
+-- consists of the elements of s1 which do not belings to s2
 -- diff {Joe,Sue} {Sue,Ben} = {Joe}
+diff :: Ord a => Set a -> Set a -> Set a
+diff (SetI xs) (SetI ys) = SetI (dif xs ys)
+
+dif :: Ord a => [a] -> [a] -> [a]
+dif [] ys = []
+dif xs [] = xs
+dif (x:xs) yn@(y:ys)
+  | x < y = x : dif xs yn
+  | x == y = dif xs ys
+  | otherwise = x : dif xs ys
 
 subSet :: Ord a => Set a -> Set a -> Bool
 subSet (SetI xs) (SetI ys) = subS xs ys
@@ -71,13 +85,13 @@ subS [] ys = True
 subS xs [] = False
 subS (x:xs) (y:ys)
   | x < y = False
-  | x = y = subS xs ys
+  | x == y = subS xs ys
   | otherwise = subS (x:xs) ys
 
 eqSet :: Eq a => Set a -> Set a -> Bool
 eqSet (SetI xs) (SetI ys) = xs == ys
 
-leqSet :: Eq a => Set a -> Set a -> Bool
+leqSet :: (Eq a, Ord a) => Set a -> Set a -> Bool
 leqSet (SetI xs) (SetI ys) = xs <= ys
 
 makeSet :: Ord a => [a] -> Set a
@@ -104,3 +118,19 @@ showSet f (SetI xs) = concat (map ((++"\n") . f) xs)
 -- cardinality
 card :: Set a -> Int
 card (SetI xs) = length xs
+
+
+-- Ex 16.32
+-- Compare how the following pairs of sets are related
+-- by the orderings <= and subSet
+{-
+{3} {3,4}
+  <=     -> True
+  subSet -> True
+{2,3} {3,4}
+  <=     -> True
+  subSet -> False
+{2,9} {2,7,9}
+  <=     -> False
+  subSet -> True
+-}
