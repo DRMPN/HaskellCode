@@ -23,7 +23,7 @@ instance Eq a => Eq (Set a) where
 instance Ord a => Ord (Set a) where
   (<=) = leqSet
 instance Show a => Show (Set a) where
-  show (SetI x) = show x
+  show (SetI x) = "SetI " ++ show x
 
 empty :: Set a
 empty = SetI []
@@ -72,10 +72,10 @@ diff (SetI xs) (SetI ys) = SetI (dif xs ys)
 dif :: Ord a => [a] -> [a] -> [a]
 dif [] ys = []
 dif xs [] = xs
-dif (x:xs) yn@(y:ys)
+dif xn@(x:xs) yn@(y:ys)
   | x < y = x : dif xs yn
   | x == y = dif xs ys
-  | otherwise = x : dif xs ys
+  | otherwise = dif xn ys
 
 subSet :: Ord a => Set a -> Set a -> Bool
 subSet (SetI xs) (SetI ys) = subS xs ys
@@ -134,3 +134,16 @@ card (SetI xs) = length xs
   <=     -> False
   subSet -> True
 -}
+
+-- Ex 16.34
+-- Define function which gives the symmetric difference of two sets.
+-- This consist of the elements which lie in one of the sets
+-- but not the other, so that
+-- symmDiff {Joe,Sue} {Sue,Ben} = {Joe,Ben}
+symmDiff :: Ord a => Set a -> Set a -> Set a
+symmDiff x y = SetI (diffl ++ diffr)
+  where
+    diffl = unSet $ diff x y
+    diffr = unSet $ diff y x
+    unSet (SetI x) = x
+-- or I can implement function joinSet that combines two sets together
