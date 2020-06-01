@@ -147,3 +147,12 @@ symmDiff x y = SetI (diffl ++ diffr)
     diffr = unSet $ diff y x
     unSet (SetI x) = x
 -- or I can implement function joinSet that combines two sets together
+
+-- Ex 16.35
+-- Define the function which returns the set of all subsets of a set defined
+powerSet :: Ord a => Set a -> Set (Set a)
+powerSet (SetI xs) = SetI (map makeSet $ pwrst xs)
+-- TODO redo powerset algorithm
+pwrst :: Ord a => [a] -> [[a]]
+pwrst [] = [ [] ]
+pwrst (x:xs) = map (x:) (pwrst xs) ++ pwrst xs
