@@ -152,7 +152,10 @@ symmDiff x y = SetI (diffl ++ diffr)
 -- Define the function which returns the set of all subsets of a set defined
 powerSet :: Ord a => Set a -> Set (Set a)
 powerSet (SetI xs) = SetI (map makeSet $ pwrst xs)
--- TODO redo powerset algorithm
 pwrst :: Ord a => [a] -> [[a]]
 pwrst [] = [ [] ]
 pwrst (x:xs) = map (x:) (pwrst xs) ++ pwrst xs
+
+-- Recurtion definition of power set from wiki
+psWiki [] = [[]]
+psWiki (x:xs) = psWiki xs ++ [ x:t | t <- psWiki xs]
