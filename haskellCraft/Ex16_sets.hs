@@ -119,7 +119,6 @@ showSet f (SetI xs) = concat (map ((++"\n") . f) xs)
 card :: Set a -> Int
 card (SetI xs) = length xs
 
-
 -- Ex 16.32
 -- Compare how the following pairs of sets are related
 -- by the orderings <= and subSet
@@ -159,3 +158,12 @@ pwrst (x:xs) = map (x:) (pwrst xs) ++ pwrst xs
 -- Recurtion definition of power set from wiki
 psWiki [] = [[]]
 psWiki (x:xs) = psWiki xs ++ [ x:t | t <- psWiki xs]
+
+-- Ex 16.36
+-- Define functions which return union and intersection of a set of sets
+-- defined using the operations of the abstract data type.
+setUnion :: Ord a => Set (Set a) -> Set a
+setUnion (SetI xs) = foldr1 (\x acc -> union acc x) xs
+
+setInter :: Ord a => Set (Set a) -> Set a
+setInter (SetI xs) = foldr1 (\x acc -> inter acc x) xs
