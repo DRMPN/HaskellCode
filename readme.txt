@@ -5,3 +5,5 @@ LYAH - Learn You a Haskell for Great Good
 1-99problems - few exercises from wiki
 
 haskellCraft - Haskell The Craft of Funcitonal Programming
+
+JK - Contains fun stuff for something in near future 
