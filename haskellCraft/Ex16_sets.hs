@@ -167,3 +167,21 @@ setUnion (SetI xs) = foldr1 (\x acc -> union acc x) xs
 
 setInter :: Ord a => Set (Set a) -> Set a
 setInter (SetI xs) = foldr1 (\x acc -> inter acc x) xs
+
+-- Ex. 16.37
+{-
+Can infinite sets be adequately represented by ordered lists?
+Yes i.e. in math there are sets that represen setsof numbers
+like Whole Number or Natural. All of them are infinite and ordered
+-}
+{-
+Can you tell if two infinite lists are equal?
+assume we have two infinite and ordered lists:
+(x1,x2...xn) and (y1,y2...yn)
+so two list will be equal if every element in the
+first list is equal to every element in the second list
+or at least like that
+two list will be equal as long as the property holds:
+nth element in the x is equal to nth element in the y
+Xn = Yn
+-}
