@@ -185,3 +185,16 @@ two list will be equal as long as the property holds:
 nth element in the x is equal to nth element in the y
 Xn = Yn
 -}
+
+-- Ex 16.38
+-- Give implementation which includes arbitary lists
+-- We can leave the implementation for Set as it is
+-- cuz it already represents an arbitary list
+-- all what we need do to is to reimplement some functions
+
+-- Ex 16.39
+-- Give an implementation of the Set abstract data type
+-- using search trees
+
+-- Ex 16.40
+-- Give an implementation of the search tree abstract data type using ordered lists.
