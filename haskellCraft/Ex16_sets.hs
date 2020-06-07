@@ -1,4 +1,6 @@
-module Set
+module Ex16_sets
+-- TODO uncomment to hide that stuff
+  {-
   ( Set,
     empty,              -- Set a
     sing,               -- a -> Set a
@@ -12,7 +14,9 @@ module Set
     foldSet,            -- (a -> a -> a) -> a -> Set a -> Set a
     showSet,            -- (a -> String) -> Set a -> String
     card                -- Set a -> Int
-  ) where
+  )
+-}
+where
 
 import Data.List hiding ( union )
 
@@ -191,6 +195,7 @@ Xn = Yn
 -- We can leave the implementation for Set as it is
 -- cuz it already represents an arbitary list
 -- all what we need do to is to reimplement some functions
+-- type BoolSet a = Set (a -> Bool)
 
 -- Ex 16.39
 -- Give an implementation of the Set abstract data type
