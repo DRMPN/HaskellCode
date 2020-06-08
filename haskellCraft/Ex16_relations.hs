@@ -1,18 +1,18 @@
 module Ex16_relations
 -- TODO hide
 where
-----------------------------Imports---------------------------
+--------------------------Imports-----------------------------
 import Ex16_sets
 
 --------------------------------------------------------------
-----------------------------Hardcode--------------------------
+--------------------------Hardcode----------------------------
 
 type People = String
 isParent :: Set (People,People)
 isParent = SetI [("Ben","Sue"), ("Ben","Leo"),("Sue", "Joe")]
 
 --------------------------------------------------------------
-----------------------------Funcitons-------------------------
+--------------------------Parents-----------------------------
 type Relation a = Set (a,a)
 
 image :: Ord a => Relation a -> a -> Set a
@@ -56,3 +56,28 @@ limit f x
   | otherwise = limit f next
   where
     next = f x
+
+--------------------------------------------------------------
+--------------------------Graphs------------------------------
+graph1 = SetI [(1,2),(1,3),(3,2),(3,4),(4,2),(2,4)]
+
+connect :: Ord a => Relation a -> Relation a
+connect rel = clos `inter` solc
+  where
+    clos = tClosure rel
+    solc = inverse clos
+
+inverse :: Ord a => Relation a -> Relation a
+inverse = mapSet swap
+  where swap (x,y) = (y,x)
+
+classes :: Ord a => Relation a -> Set (Set a)
+classes rel =
+  limit (addImages rel) start
+  where start = mapSet sing (eles rel)
+
+eles :: Ord a => Relation a -> Set a
+eles rel = mapSet fst rel `union` mapSet snd rel
+
+addImages :: Ord a => Relation a -> Set (Set a) -> Set (Set a)
+addImages rel = mapSet (addImage rel)
