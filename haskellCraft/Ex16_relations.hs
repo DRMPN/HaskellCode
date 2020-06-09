@@ -81,3 +81,25 @@ eles rel = mapSet fst rel `union` mapSet snd rel
 
 addImages :: Ord a => Relation a -> Set (Set a) -> Set (Set a)
 addImages rel = mapSet (addImage rel)
+
+-- Searching in graphs
+depthFirst :: Ord a => Relation a -> a -> [a]
+depthFirst = undefined
+
+breadthFirst :: Ord a => Relation a -> a -> [a]
+breadthFirst = undefined
+
+findDescs :: Ord a => Relation a -> [a] -> a -> [a]
+findDescs rel xs v = flatten (newDescs rel (makeSet xs) v)
+-- find all the descendants of a node which have not been
+-- visited so far
+newDescs :: Ord a => Relation a -> Set a -> a -> Set a
+newDescs rel st v = image rel v `diff` st
+
+flatten :: Set a -> [a]
+flatten (SetI xs) = xs
+
+-- returns minimum of a non-empty set
+minSet :: Set a -> Maybe a
+minSet = undefined
+
