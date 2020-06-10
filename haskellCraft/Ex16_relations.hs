@@ -3,6 +3,7 @@ module Ex16_relations
 where
 --------------------------Imports-----------------------------
 import Ex16_sets
+import Data.List (nub)
 
 --------------------------------------------------------------
 --------------------------Hardcode----------------------------
@@ -84,10 +85,27 @@ addImages rel = mapSet (addImage rel)
 
 -- Searching in graphs
 depthFirst :: Ord a => Relation a -> a -> [a]
-depthFirst = undefined
+depthFirst rel v = depthSearch rel v []
+
+depthSearch :: Ord a => Relation a -> a -> [a] -> [a]
+depthSearch rel v used
+  = v : depthList rel (findDescs rel used' v) used'
+  where used' = v:used
+
+depthList :: Ord a => Relation a -> [a] -> [a] -> [a]
+depthList rel [] used = []
+depthList rel (val:rest) used
+  = next ++ depthList rel rest (used ++ next)
+  where
+    next = if elem val used
+           then []
+           else depthSearch rel val used
 
 breadthFirst :: Ord a => Relation a -> a -> [a]
-breadthFirst = undefined
+breadthFirst rel val = limit step start
+  where
+    start = [val]
+    step xs = xs ++ nub (concat (map (findDescs rel xs) xs))
 
 findDescs :: Ord a => Relation a -> [a] -> a -> [a]
 findDescs rel xs v = flatten (newDescs rel (makeSet xs) v)
