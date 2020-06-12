@@ -121,3 +121,21 @@ flatten (SetI xs) = xs
 minSet :: Set a -> Maybe a
 minSet = undefined
 
+-- Exercise 16.41
+-- Calculate
+{-
+classes (connect graph1) -> SetI []
+classes (connect graph2) -> SetI []
+
+where graph2 = graph1 `union` SetI [(4,3)]
+-}
+
+-- Ex. 16.42
+-- Give calculations of
+{-
+graph2 = SetI [(1,2),(1,3),(3,2),(3,4),(4,2),(4,3)]
+
+breadthFirst graph2 1 -> [1,2,3,4]
+
+depthFirst graph2 1   -> [1,2,4,3]
+-}
