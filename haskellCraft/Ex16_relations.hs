@@ -139,3 +139,29 @@ breadthFirst graph2 1 -> [1,2,3,4]
 
 depthFirst graph2 1   -> [1,2,4,3]
 -}
+
+-- Ex. 16.43
+-- Give a function
+{-
+distance graph1 1 4 -> 2
+  Works
+distance 4 1 -> 0
+  Inf. loop between 2 and 4
+-}
+
+--distance :: Eq a => Relation a -> a -> a -> Int
+--distance (SetI xs) a b = dist xs a b 0
+
+--dist :: [a] -> a -> a
+dist [] _ _ val = val
+dist t@(x:xs) a b val
+  | elem (a,b) t = val + 1
+  | otherwise = cont t b (val+1) $ filter (\(x,y) -> x == a) t
+
+cont t b val xs = again t b val (map (\(a,b) -> b) xs)
+
+again rel b val (x:xs) = dist rel x b val
+
+-- test
+unset (SetI xs) = xs
+
